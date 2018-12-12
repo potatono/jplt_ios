@@ -1,0 +1,6 @@
+framework module Pods_PPCUITests {
+  umbrella header "Pods-PPCUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

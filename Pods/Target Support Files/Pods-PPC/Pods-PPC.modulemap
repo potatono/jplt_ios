@@ -1,0 +1,6 @@
+framework module Pods_PPC {
+  umbrella header "Pods-PPC-umbrella.h"
+
+  export *
+  module * { export * }
+}
