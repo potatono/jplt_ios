@@ -25,6 +25,7 @@ import UIKit
         var i = samples.count - 1
         var x = width - barWidth
 
+        ctx!.setFillColor(red: 176/256.0, green: 224/256.0, blue: 236/256.0, alpha: 1.0)
         while x >= 0 && i >= 0 {
             let h = Int(samples[i] * Float(height))
             ctx!.addRect(CGRect(x: x, y: height / 2 - h / 2, width: barWidth, height: h))

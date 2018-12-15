@@ -9,12 +9,12 @@
 /* Begin PBXBuildFile section */
 		0841D353C7BFA2F92A93F60B /* Pods_PPCTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E90C1ACA5CF3E691AA0CBD5 /* Pods_PPCTests.framework */; };
 		5ECB2DDFD6127BE4A6A75389 /* Pods_PPCUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5971FB332826F3263CC6EB19 /* Pods_PPCUITests.framework */; };
+		D014287621C59EE800D0A414 /* Episodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D014287521C59EE800D0A414 /* Episodes.swift */; };
 		D0685DEE21921C1A0092E0FE /* UIVUMeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0685DED21921C1A0092E0FE /* UIVUMeter.swift */; };
 		D0685DF02193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
 		D0685DF12193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
 		D0685DF22193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
 		D0947CB9219091A900394049 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0947CB8219091A900394049 /* AppDelegate.swift */; };
-		D0947CBB219091A900394049 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0947CBA219091A900394049 /* ViewController.swift */; };
 		D0947CBE219091A900394049 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0947CBC219091A900394049 /* Main.storyboard */; };
 		D0947CC0219091AB00394049 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0947CBF219091AB00394049 /* Assets.xcassets */; };
 		D0947CC3219091AB00394049 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0947CC1219091AB00394049 /* LaunchScreen.storyboard */; };
@@ -22,6 +22,11 @@
 		D0947CD9219091AC00394049 /* PPCUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0947CD8219091AC00394049 /* PPCUITests.swift */; };
 		D0F5F40321BADB3100EB65CE /* AuthNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F5F40221BADB3100EB65CE /* AuthNumberViewController.swift */; };
 		D0F5F40521BADB7B00EB65CE /* AuthCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F5F40421BADB7B00EB65CE /* AuthCodeViewController.swift */; };
+		D0F5F40721C1A9D000EB65CE /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F5F40621C1A9D000EB65CE /* DetailViewController.swift */; };
+		D0F5F40921C1B94300EB65CE /* EpisodeTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F5F40821C1B94300EB65CE /* EpisodeTableViewCell.swift */; };
+		D0F5F40B21C1BA4000EB65CE /* EpisodeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F5F40A21C1BA4000EB65CE /* EpisodeTableViewController.swift */; };
+		D0F5F40D21C1BB0400EB65CE /* Episode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F5F40C21C1BB0400EB65CE /* Episode.swift */; };
+		D0F5F40F21C1F7F400EB65CE /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0F5F40E21C1F7F400EB65CE /* MainViewController.swift */; };
 		D14A3AB56FB14FD3EF310CF4 /* Pods_PPC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7370270C55BF999450257CB7 /* Pods_PPC.framework */; };
 /* End PBXBuildFile section */
 
@@ -52,11 +57,11 @@
 		8438EDD9D2B9203FA873B5CE /* Pods-PPCTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PPCTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-PPCTests/Pods-PPCTests.release.xcconfig"; sourceTree = "<group>"; };
 		A9F464517401D4D6AD9C0FF5 /* Pods-PPCTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PPCTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PPCTests/Pods-PPCTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CEFA191C336962A2CC63148C /* Pods-PPCUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PPCUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PPCUITests/Pods-PPCUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		D014287521C59EE800D0A414 /* Episodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Episodes.swift; sourceTree = "<group>"; };
 		D0685DED21921C1A0092E0FE /* UIVUMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIVUMeter.swift; sourceTree = "<group>"; };
 		D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D0947CB5219091A900394049 /* PPC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0947CB8219091A900394049 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D0947CBA219091A900394049 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		D0947CBD219091A900394049 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D0947CBF219091AB00394049 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D0947CC2219091AB00394049 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -70,6 +75,11 @@
 		D0F083C12193CC2E006C0161 /* PPC.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PPC.entitlements; sourceTree = "<group>"; };
 		D0F5F40221BADB3100EB65CE /* AuthNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthNumberViewController.swift; sourceTree = "<group>"; };
 		D0F5F40421BADB7B00EB65CE /* AuthCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthCodeViewController.swift; sourceTree = "<group>"; };
+		D0F5F40621C1A9D000EB65CE /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		D0F5F40821C1B94300EB65CE /* EpisodeTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeTableViewCell.swift; sourceTree = "<group>"; };
+		D0F5F40A21C1BA4000EB65CE /* EpisodeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeTableViewController.swift; sourceTree = "<group>"; };
+		D0F5F40C21C1BB0400EB65CE /* Episode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Episode.swift; sourceTree = "<group>"; };
+		D0F5F40E21C1F7F400EB65CE /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,8 +150,8 @@
 			children = (
 				D0F083C12193CC2E006C0161 /* PPC.entitlements */,
 				D0947CB8219091A900394049 /* AppDelegate.swift */,
-				D0947CBA219091A900394049 /* ViewController.swift */,
 				D0947CBC219091A900394049 /* Main.storyboard */,
+				D0F5F40621C1A9D000EB65CE /* DetailViewController.swift */,
 				D0947CBF219091AB00394049 /* Assets.xcassets */,
 				D0947CC1219091AB00394049 /* LaunchScreen.storyboard */,
 				D0947CC4219091AB00394049 /* Info.plist */,
@@ -149,6 +159,11 @@
 				D0685DED21921C1A0092E0FE /* UIVUMeter.swift */,
 				D0F5F40221BADB3100EB65CE /* AuthNumberViewController.swift */,
 				D0F5F40421BADB7B00EB65CE /* AuthCodeViewController.swift */,
+				D0F5F40821C1B94300EB65CE /* EpisodeTableViewCell.swift */,
+				D0F5F40A21C1BA4000EB65CE /* EpisodeTableViewController.swift */,
+				D0F5F40C21C1BB0400EB65CE /* Episode.swift */,
+				D0F5F40E21C1F7F400EB65CE /* MainViewController.swift */,
+				D014287521C59EE800D0A414 /* Episodes.swift */,
 			);
 			path = PPC;
 			sourceTree = "<group>";
@@ -395,18 +410,32 @@
 			);
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-PPC/Pods-PPC-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BoringSSL/openssl.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
 				"${BUILT_PRODUCTS_DIR}/Protobuf/Protobuf.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC/GRPCClient.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-C++/grpcpp.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-Core/grpc.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-ProtoRPC/ProtoRPC.framework",
+				"${BUILT_PRODUCTS_DIR}/gRPC-RxLibrary/RxLibrary.framework",
+				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 			);
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Protobuf.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GRPCClient.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpcpp.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/grpc.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtoRPC.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxLibrary.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -421,11 +450,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D0947CBB219091A900394049 /* ViewController.swift in Sources */,
+				D0F5F40921C1B94300EB65CE /* EpisodeTableViewCell.swift in Sources */,
+				D014287621C59EE800D0A414 /* Episodes.swift in Sources */,
 				D0947CB9219091A900394049 /* AppDelegate.swift in Sources */,
 				D0F5F40521BADB7B00EB65CE /* AuthCodeViewController.swift in Sources */,
+				D0F5F40721C1A9D000EB65CE /* DetailViewController.swift in Sources */,
 				D0685DEE21921C1A0092E0FE /* UIVUMeter.swift in Sources */,
+				D0F5F40B21C1BA4000EB65CE /* EpisodeTableViewController.swift in Sources */,
+				D0F5F40D21C1BB0400EB65CE /* Episode.swift in Sources */,
 				D0F5F40321BADB3100EB65CE /* AuthNumberViewController.swift in Sources */,
+				D0F5F40F21C1F7F400EB65CE /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

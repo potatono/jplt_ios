@@ -10,6 +10,7 @@ target 'PPC' do
   pod 'Firebase/Storage'
   pod 'Firebase/Auth'
   pod 'Firebase/Messaging'
+  pod 'Firebase/Firestore'
 
   target 'PPCTests' do
     inherit! :search_paths
