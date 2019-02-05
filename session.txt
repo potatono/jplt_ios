@@ -1,0 +1,28 @@
+justin
+    subscriptions
+        angela
+        rebecca
+        jgood
+    offers
+        douggie
+    feed
+        episodes
+            angela:1
+            rebecca:2
+            jgood:3
+    shows
+        burners
+            subscribers
+                jgood
+                rebecca
+                angela
+            episodes
+                1
+                    roles
+                        jgood: read
+                        rebecca: read
+                        angela: read
+                    audio
+                    image
+                    title
+

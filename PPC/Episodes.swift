@@ -17,8 +17,8 @@ class Episodes {
     
     func getCollection() -> CollectionReference {
         let db = Firestore.firestore()
-        let uid = Auth.auth().currentUser!.uid
-        let col = db.collection("podcasts").document(uid).collection("episodes")
+        let pid = "prealpha"
+        let col = db.collection("podcasts").document(pid).collection("episodes")
         
         return col
     }
@@ -32,15 +32,20 @@ class Episodes {
                 print("Error getting documents \(err!)")
             }
             else {
-                
-                for doc in snap!.documents {
+                for diff in snap!.documentChanges {
+                    let doc = diff.document
                     let data = doc.data()
                     let episode = Episode(doc.documentID)
                     
-                    episode.update(data) { episode in
-                        completion(self.list)
+                    if diff.type == DocumentChangeType.removed {
+                        self.dict.removeValue(forKey: doc.documentID)
                     }
-                    self.dict[doc.documentID] = episode
+                    else {
+                        episode.restore(data) { episode in
+                            completion(self.list)
+                        }
+                        self.dict[doc.documentID] = episode
+                    }
                 }
                 self.list = Array(self.dict.values)
                 

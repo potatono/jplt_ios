@@ -38,6 +38,7 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     private var _timer: Timer!
     private var _audioPlayer:AVPlayer!
     private var _audioTimeObserverToken:Any?
+    private var _editable:Bool = true
 
     // MARK: Properties
     @IBOutlet weak var vuMeter: UIVUMeter!
@@ -85,6 +86,21 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     }
     
     @IBAction func didPressDelete(_ sender: Any) {
+        let refreshAlert = UIAlertController(title: "Delete Episode", message: "Are you sure?",
+                                             preferredStyle: UIAlertController.Style.alert)
+        
+        refreshAlert.addAction(UIAlertAction(title: "Ok", style: .default, handler: { (action: UIAlertAction!) in
+            print("Deleting episode..")
+            self.episode.delete() { () in
+                self.performSegue(withIdentifier: "unwindDetailSegue", sender: self)
+            }
+        }))
+        
+        refreshAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { (action: UIAlertAction!) in
+            print("Delete cancelled")
+        }))
+        
+        present(refreshAlert, animated: true, completion: nil)
     }
     
     @IBAction func didPressCover(_ sender: Any) {
@@ -114,9 +130,18 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         
         titleTextField.text = episode.title
         coverButton.setImage(episode.cover, for: UIControl.State.normal)
+        coverButton.setImage(episode.cover, for: UIControl.State.disabled)
+        
+        _editable = episode.canEdit()
+        titleTextField.isEnabled = _editable
+        coverButton.isEnabled = _editable
+        deleteButton.isEnabled = _editable
         
         if episode.remoteURL != nil {
             setState(.stopped)
+        }
+        else {
+            mediaButton.isEnabled = _editable
         }
     }
     
@@ -138,7 +163,7 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
             image_name = "media_play"
             
         }
-        
+
         mediaButton.setImage(UIImage(named: image_name!), for: UIControl.State.normal)
     }
     
@@ -336,10 +361,6 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     func resetPlayback() {
         _audioPlayer.seek(to: CMTime(value:0, timescale:1))
         setState(.stopped)
-    }
-    
-    func deleteRecording() {
-        
     }
 }
 

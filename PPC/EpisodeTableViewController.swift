@@ -13,8 +13,11 @@ class EpisodeTableViewController: UITableViewController {
     // MARK: Properties
     var episodes = Episodes()
     
-    
     // MARK: Actions
+    @IBAction func unwindDetail(unwindSegue: UIStoryboardSegue) {
+        self.tableView.reloadData()
+    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,11 +27,43 @@ class EpisodeTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+
+        
         loadData()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+       // self.navigationController!.setToolbarHidden(false, animated: false)
+        
+    }
 
+    @IBAction func didPressMore(_ sender: Any) {
+        print("Show Actionsheet")
+        let alertController = UIAlertController(title: "Show", message: nil, preferredStyle: .actionSheet)
+        
+        let sendButton = UIAlertAction(title: "Manage Subscribers", style: .default, handler: { (action) -> Void in
+            print("Ok button tapped")
+        })
+        
+        let  deleteButton = UIAlertAction(title: "Show Details", style: .default, handler: { (action) -> Void in
+            print("Delete button tapped")
+        })
+        
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
+            print("Cancel button tapped")
+        })
+        
+        
+        alertController.addAction(sendButton)
+        alertController.addAction(deleteButton)
+        alertController.addAction(cancelButton)
+        
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
     // MARK: - Table view data source
-
+    
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }

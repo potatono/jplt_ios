@@ -17,6 +17,7 @@ class Episode {
     
     // MARK: Properties
     var id: String
+    var owner: String
     var localURL: URL
     var remoteURL: URL?
     var title: String
@@ -24,11 +25,12 @@ class Episode {
     var remoteCoverURL: URL?
     
     // MARK: Initialization
-    init(id:String, title:String, cover:UIImage, url:URL) {
+    init(id:String, title:String, owner:String, cover:UIImage, url:URL) {
         self.id = id
         self.title = title
         self.cover = cover
         self.remoteURL = url
+        self.owner = owner
         self.localURL = Episode.createLocalURL(self.id)
     }
     
@@ -36,6 +38,7 @@ class Episode {
         self.id = id
         self.title = "New Episode"
         self.cover = UIImage(named: "jplt_full")!
+        self.owner = Auth.auth().currentUser!.uid
         self.localURL = Episode.createLocalURL(self.id)
     }
     
@@ -55,8 +58,9 @@ class Episode {
         return soundURL.appendingPathComponent(filename)
     }
     
-    func update(_ data: [String : Any], completion: ((Episode) -> Void)? = nil) {
+    func restore(_ data: [String : Any], completion: ((Episode) -> Void)? = nil) {
         self.title = data["title"] as! String
+        self.owner = data["owner"] as! String
         
         if data["remoteURL"] != nil {
             self.remoteURL = URL(string: data["remoteURL"] as! String)
@@ -69,9 +73,7 @@ class Episode {
     }
     
     func createRemotePath(_ filename:String="sound.m4a") -> String {
-        let uid = Auth.auth().currentUser!.uid
-        
-        return "podcasts/\(uid)/episodes/\(id)/\(filename)"
+        return "podcasts/\(owner)/episodes/\(id)/\(filename)"
     }
 
     func getPlaybackURL() -> URL? {
@@ -80,14 +82,19 @@ class Episode {
         return remoteURL
     }
     
+    func canEdit() -> Bool {
+        return self.owner == Auth.auth().currentUser!.uid
+    }
+    
     func save() {
         let db = Firestore.firestore()
-        let uid = Auth.auth().currentUser!.uid
-        let col = db.collection("podcasts").document(uid).collection("episodes")
+        let pid = "prealpha"
+        let col = db.collection("podcasts").document(pid).collection("episodes")
         
         var doc: [String: Any] = [
             "id": id,
             "title": title,
+            "owner": owner,
             "localURL": localURL.absoluteString
         ]
         
@@ -186,6 +193,33 @@ class Episode {
                 
                 completion?(self)
             }
+        }
+    }
+    
+    func delete(completion: (() -> Void)? = nil) {
+        let db = Firestore.firestore()
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+
+        let pid = "prealpha"
+        let col = db.collection("podcasts").document(pid).collection("episodes")
+        let doc = col.document(id)
+        
+        print("Deleting episode document..")
+        
+        doc.delete { (_: Error?) in
+            print("Deleting episode cover..")
+            let coverRef = storageRef.child(self.createRemotePath("cover.jpg"))
+
+            coverRef.delete(completion: { (_: Error?) in
+                print("Deleting episode audio..")
+                let episodeRef = storageRef.child(self.createRemotePath())
+
+                episodeRef.delete(completion: { (_: Error?) in
+                    print("Calling completion..")
+                    if completion != nil { completion!(); }
+                })
+            })
         }
     }
 }
