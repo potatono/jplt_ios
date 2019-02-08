@@ -139,6 +139,7 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         
         if episode.remoteURL != nil {
             setState(.stopped)
+            scrubSlider.isEnabled = true
         }
         else {
             mediaButton.isEnabled = _editable

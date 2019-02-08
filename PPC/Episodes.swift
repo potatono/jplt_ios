@@ -27,7 +27,7 @@ class Episodes {
         Episode.listener = completion
         let col = getCollection()
         
-        col.addSnapshotListener { (snap, err) in
+        col.order(by: "createDate", descending: true).addSnapshotListener { (snap, err) in
             if err != nil {
                 print("Error getting documents \(err!)")
             }
@@ -49,6 +49,10 @@ class Episodes {
                 }
                 self.list = Array(self.dict.values)
                 
+                // We need to resort because we're converting list to hash.
+                self.list.sort() { (a,b) in
+                    return a.createDate < b.createDate;
+                }
                 completion(self.list)
             }
         }

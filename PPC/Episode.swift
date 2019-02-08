@@ -23,6 +23,7 @@ class Episode {
     var title: String
     var cover: UIImage
     var remoteCoverURL: URL?
+    var createDate: Date
     
     // MARK: Initialization
     init(id:String, title:String, owner:String, cover:UIImage, url:URL) {
@@ -32,6 +33,7 @@ class Episode {
         self.remoteURL = url
         self.owner = owner
         self.localURL = Episode.createLocalURL(self.id)
+        self.createDate = Date()
     }
     
     init(_ id:String=UUID().uuidString) {
@@ -40,6 +42,7 @@ class Episode {
         self.cover = UIImage(named: "jplt_full")!
         self.owner = Auth.auth().currentUser!.uid
         self.localURL = Episode.createLocalURL(self.id)
+        self.createDate = Date()
     }
     
     private class func createLocalURL(_ id:String, _ filename:String="sound.m4a") -> URL {
@@ -70,6 +73,8 @@ class Episode {
             self.remoteCoverURL = URL(string: data["remoteCoverURL"] as! String)
             self.downloadCover(completion: completion)
         }
+        
+        self.createDate = data["createDate"] as? Date ?? Date()
     }
     
     func createRemotePath(_ filename:String="sound.m4a") -> String {
@@ -95,7 +100,8 @@ class Episode {
             "id": id,
             "title": title,
             "owner": owner,
-            "localURL": localURL.absoluteString
+            "localURL": localURL.absoluteString,
+            "createDate": Timestamp(date:createDate)
         ]
         
         if remoteURL != nil {
