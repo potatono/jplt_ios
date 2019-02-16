@@ -12,7 +12,7 @@ import UIKit
 import Firebase
 import FirebaseAuth
 
-class Episode {
+class Episode : Model {
     static var listener: (([Episode]) -> Void)? = nil
     
     // MARK: Properties
@@ -21,28 +21,29 @@ class Episode {
     var localURL: URL
     var remoteURL: URL?
     var title: String
-    var cover: UIImage
     var remoteCoverURL: URL?
+    var remoteThumbURL: URL?
     var createDate: Date
+    var profile: Profile
     
     // MARK: Initialization
-    init(id:String, title:String, owner:String, cover:UIImage, url:URL) {
+    init(id:String, title:String, owner:String, url:URL) {
         self.id = id
         self.title = title
-        self.cover = cover
         self.remoteURL = url
         self.owner = owner
         self.localURL = Episode.createLocalURL(self.id)
         self.createDate = Date()
+        self.profile = Profile(self.owner)
     }
     
     init(_ id:String=UUID().uuidString) {
         self.id = id
         self.title = "New Episode"
-        self.cover = UIImage(named: "jplt_full")!
         self.owner = Auth.auth().currentUser!.uid
         self.localURL = Episode.createLocalURL(self.id)
         self.createDate = Date()
+        self.profile = Profile(self.owner)
     }
     
     private class func createLocalURL(_ id:String, _ filename:String="sound.m4a") -> URL {
@@ -63,7 +64,13 @@ class Episode {
     
     func restore(_ data: [String : Any], completion: ((Episode) -> Void)? = nil) {
         self.title = data["title"] as! String
+        
         self.owner = data["owner"] as! String
+        self.profile = Profiles.instance().get(self.owner) { (_) in
+            if (completion != nil) {
+                completion!(self)
+            }
+        }
         
         if data["remoteURL"] != nil {
             self.remoteURL = URL(string: data["remoteURL"] as! String)
@@ -71,10 +78,18 @@ class Episode {
         
         if data["remoteCoverURL"] != nil {
             self.remoteCoverURL = URL(string: data["remoteCoverURL"] as! String)
-            self.downloadCover(completion: completion)
         }
         
-        self.createDate = data["createDate"] as? Date ?? Date()
+        if data["remoteThumbURL"] != nil {
+            self.remoteThumbURL = URL(string: data["remoteThumbURL"] as! String)
+        }
+        
+        if data["createDate"] != nil {
+            let t = data["createDate"] as! Timestamp
+            self.createDate = t.dateValue()
+        }
+        
+        self.setBindings()
     }
     
     func createRemotePath(_ filename:String="sound.m4a") -> String {
@@ -93,7 +108,7 @@ class Episode {
     
     func save() {
         let db = Firestore.firestore()
-        let pid = "prealpha"
+        let pid = Episodes.PID
         let col = db.collection("podcasts").document(pid).collection("episodes")
         
         var doc: [String: Any] = [
@@ -110,6 +125,10 @@ class Episode {
         
         if remoteCoverURL != nil {
             doc["remoteCoverURL"] = remoteCoverURL!.absoluteString
+        }
+        
+        if remoteThumbURL != nil {
+            doc["remoteThumbURL"] = remoteThumbURL!.absoluteString
         }
         
         let callback: ((Error?) -> Void) = { err in
@@ -149,22 +168,15 @@ class Episode {
             }
         }
     }
-        
-    func uploadCover() {
+    
+    func upload(filename:String, data:Data, completion: @escaping ((URL)->Void)) {
         let storage = Storage.storage()
         let storageRef = storage.reference()
-        let fileRef = storageRef.child(self.createRemotePath("cover.jpg"))
-        let data = cover.jpegData(compressionQuality:0.8)
+        let fileRef = storageRef.child(self.createRemotePath(filename))
         
-        if data == nil {
-            print("Could not get jpeg data for cover.")
-            return
-        }
+        print("Uploading \(filename)..")
         
-        print("Uploading cover..")
-        
-        // TODO use the uploadTask returned by putFile to show progress
-        fileRef.putData(data!, metadata: nil) { metadata, error in
+        fileRef.putData(data, metadata: nil) { metadata, error in
             guard let metadata = metadata else {
                 print("Error occured while uploading file: \(error!)")
                 return
@@ -178,36 +190,61 @@ class Episode {
                     print("Error while getting download URL \(err!)")
                 }
                 else {
-                    self.remoteCoverURL = url!
-                    self.save()
+                    print("Download URL is \(url!)")
+                    completion(url!)
                 }
             }
         }
     }
     
-    func downloadCover(completion: ((Episode) -> Void)? = nil) {
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        let fileRef = storageRef.child(self.createRemotePath("cover.jpg"))
+    func uploadCover(_ cover:UIImage) {
+        if let data = cover.jpegData(compressionQuality: 0.8) {
+            print("Uploading cover..")
 
-        fileRef.getData(maxSize: 1024 * 1024) { data, err in
-            if err != nil {
-                print("Error occured while downloading cover. \(err!)")
-            }
-            else {
-                self.cover = UIImage(data: data!)!
-                
-                completion?(self)
-            }
+            upload(filename: "cover.jpg",
+                   data: data,
+                   completion: { (url) in
+                     self.remoteCoverURL = url
+                     self.save()
+            })
+        }
+        
+        let thumb = cover.kf.resize(to: CGSize(width: 100, height: 100))
+        if let data = thumb.pngData() {
+            print("Uploading cover thumb..")
+            
+            self.upload(filename: "cover-thumb.png",
+                        data: data,
+                        completion: { (url) in
+                            self.remoteThumbURL = url
+                            self.save()
+            })
         }
     }
+    
+//    func downloadCover(completion: ((Episode) -> Void)? = nil) {
+//        let storage = Storage.storage()
+//        let storageRef = storage.reference()
+//        let fileRef = storageRef.child(self.createRemotePath("cover.jpg"))
+//
+//        fileRef.getData(maxSize: 1024 * 1024) { data, err in
+//            if err != nil {
+//                print("Error occured while downloading cover. \(err!)")
+//            }
+//            else {
+//                self.cover = UIImage(data: data!)!
+//
+//                completion?(self)
+//            }
+//        }
+//    }
     
     func delete(completion: (() -> Void)? = nil) {
         let db = Firestore.firestore()
         let storage = Storage.storage()
         let storageRef = storage.reference()
 
-        let pid = "prealpha"
+        let pid = Episodes.PID
         let col = db.collection("podcasts").document(pid).collection("episodes")
         let doc = col.document(id)
         

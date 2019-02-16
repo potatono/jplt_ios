@@ -128,15 +128,24 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        titleTextField.text = episode.title
-        coverButton.setImage(episode.cover, for: UIControl.State.normal)
-        coverButton.setImage(episode.cover, for: UIControl.State.disabled)
+        episode.addBinding(forTopic: "title", control: titleTextField)
+        episode.addBinding(forTopic: "remoteCoverURL", control: coverButton)
         
+        
+//        titleTextField.text = episode.title
+//
+//        if let url = episode.remoteCoverURL {
+//            coverButton.kf.setImage(with: url, for: UIControl.State.normal)
+//            coverButton.kf.setImage(with: url, for: UIControl.State.disabled)
+//        }
+//        //coverButton.setImage(episode.cover, for: UIControl.State.normal)
+//        //coverButton.setImage(episode.cover, for: UIControl.State.disabled)
+//
         _editable = episode.canEdit()
         titleTextField.isEnabled = _editable
         coverButton.isEnabled = _editable
         deleteButton.isEnabled = _editable
-        
+
         if episode.remoteURL != nil {
             setState(.stopped)
             scrubSlider.isEnabled = true
@@ -215,10 +224,8 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         })
         
         print("Setting image")
-        
-        episode.cover = image
         coverButton.setImage(image, for:UIControl.State.normal)
-        episode.uploadCover()
+        episode.uploadCover(image)
     }
     
     func ensureRecorder() {

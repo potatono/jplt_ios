@@ -38,25 +38,17 @@ class EpisodeTableViewController: UITableViewController {
     }
 
     @IBAction func didPressMore(_ sender: Any) {
-        print("Show Actionsheet")
         let alertController = UIAlertController(title: "Show", message: nil, preferredStyle: .actionSheet)
-        
-        let sendButton = UIAlertAction(title: "Manage Subscribers", style: .default, handler: { (action) -> Void in
-            print("Ok button tapped")
+
+        let profileButton = UIAlertAction(title: "Edit Profile", style: .default, handler: { (action) -> Void in
+            self.performSegue(withIdentifier: "profileSegue", sender: sender)
         })
-        
-        let  deleteButton = UIAlertAction(title: "Show Details", style: .default, handler: { (action) -> Void in
-            print("Delete button tapped")
-        })
-        
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
-            print("Cancel button tapped")
         })
         
         
-        alertController.addAction(sendButton)
-        alertController.addAction(deleteButton)
+        alertController.addAction(profileButton)
         alertController.addAction(cancelButton)
         
         self.navigationController!.present(alertController, animated: true, completion: nil)
@@ -82,9 +74,25 @@ class EpisodeTableViewController: UITableViewController {
         }
         
         let episode = episodes.list[indexPath.row]
-        cell.titleLabel.text = episode.title
-        cell.coverImageView.image = episode.cover
+//        cell.titleLabel.text = episode.title
+//
+//        if let url = episode.remoteThumbURL {
+//            cell.coverImageView.kf.setImage(with: url)
+//        }
+//        else if let url = episode.remoteCoverURL {
+//            cell.coverImageView.kf.setImage(with: url)
+//        }
+        //cell.coverImageView.image = episode.cover
 
+//        if let url = episode.profile.remoteThumbURL {
+//            print("Setting profile thumb")
+//            cell.profileImageView.kf.setImage(with: url)
+//        }
+
+        episode.addBinding(forTopic: "title", control: cell.titleLabel)
+        episode.addBinding(forTopic: "remoteThumbURL", control: cell.coverImageView)
+        episode.profile.addBinding(forTopic: "remoteThumbURL", control: cell.profileImageView)
+        
         return cell
     }
     
@@ -141,6 +149,7 @@ class EpisodeTableViewController: UITableViewController {
     
     private func loadData() {
         episodes.addListener { episodes in
+            print("Reloading table..")
             self.tableView.reloadData()
         }
     }

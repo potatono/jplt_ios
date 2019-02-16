@@ -12,12 +12,14 @@ import Firebase
 import FirebaseAuth
 
 class Episodes {
+    static var PID : String = "testing"
+    
     var dict: [String:Episode] = [:]
     var list: [Episode] = []
     
     func getCollection() -> CollectionReference {
         let db = Firestore.firestore()
-        let pid = "prealpha"
+        let pid = Episodes.PID
         let col = db.collection("podcasts").document(pid).collection("episodes")
         
         return col
@@ -41,9 +43,9 @@ class Episodes {
                         self.dict.removeValue(forKey: doc.documentID)
                     }
                     else {
-                        episode.restore(data) { episode in
-                            completion(self.list)
-                        }
+                        episode.restore(data) //{ episode in
+                            //completion(self.list)
+                        //}
                         self.dict[doc.documentID] = episode
                     }
                 }
@@ -51,11 +53,10 @@ class Episodes {
                 
                 // We need to resort because we're converting list to hash.
                 self.list.sort() { (a,b) in
-                    return a.createDate < b.createDate;
+                    return a.createDate > b.createDate;
                 }
                 completion(self.list)
             }
         }
     }
-    
 }

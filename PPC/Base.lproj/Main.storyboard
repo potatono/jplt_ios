@@ -9,6 +9,48 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Profile View Controller-->
+        <scene sceneID="mfK-Sw-nyr">
+            <objects>
+                <viewController id="isG-yX-v4o" customClass="ProfileViewController" customModule="PPC" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="qN0-CF-7eC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textField opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Username" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="SDc-Qm-P8J">
+                                <rect key="frame" x="16" y="460" width="343" height="36"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="26"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" textContentType="nickname"/>
+                                <connections>
+                                    <action selector="doneEditingUsername:" destination="isG-yX-v4o" eventType="primaryActionTriggered" id="PT4-I4-ABE"/>
+                                    <action selector="usernameEditingDidBegin:" destination="isG-yX-v4o" eventType="editingDidBegin" id="dOE-zL-cS6"/>
+                                    <action selector="usernameEditingDidEnd:" destination="isG-yX-v4o" eventType="editingDidEnd" id="zSb-08-gvZ"/>
+                                </connections>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cgt-Vk-7iF">
+                                <rect key="frame" x="27" y="109" width="320" height="320"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" image="jplt_profile"/>
+                                <connections>
+                                    <action selector="didTouchImage:" destination="isG-yX-v4o" eventType="touchUpInside" id="UdE-6x-yem"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <viewLayoutGuide key="safeArea" id="otK-Qe-CBg"/>
+                    </view>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="imageButton" destination="Cgt-Vk-7iF" id="Ftf-x1-sfR"/>
+                        <outlet property="usernameTextField" destination="SDc-Qm-P8J" id="SIt-F2-S1z"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gqT-fZ-w2e" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="980" y="1357.8710644677662"/>
+        </scene>
         <!--Auth Number View Controller-->
         <scene sceneID="rZ6-jt-awN">
             <objects>
@@ -113,21 +155,33 @@
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="100.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5mN-BP-gne">
+                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="cover_icon" translatesAutoresizingMaskIntoConstraints="NO" id="5mN-BP-gne">
                                             <rect key="frame" x="0.0" y="1" width="100" height="100"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="1 - The First Episode" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="22Q-a7-X0n">
-                                            <rect key="frame" x="108" y="1" width="235" height="100"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="The Quick Brown Fox Jumps Over the Lazy Yellow Dog.  And Then the Fox Went to Bed." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="22Q-a7-X0n">
+                                            <rect key="frame" x="108" y="1" width="258" height="54"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                             <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="jplt_profile_thumb" translatesAutoresizingMaskIntoConstraints="NO" id="mU7-lK-aMq" userLabel="Profile Thumb Image View">
+                                            <rect key="frame" x="87" y="52" width="48" height="48"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Yesterday" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5mh-NB-She">
+                                            <rect key="frame" x="143" y="68" width="64" height="17"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="coverImageView" destination="5mN-BP-gne" id="FpJ-83-ANB"/>
+                                    <outlet property="profileImageView" destination="mU7-lK-aMq" id="pvG-Cs-gDp"/>
                                     <outlet property="titleLabel" destination="22Q-a7-X0n" id="OjX-49-lcC"/>
                                     <segue destination="n0k-BC-exw" kind="show" id="Sbh-R6-JkE"/>
                                 </connections>
@@ -147,7 +201,7 @@
                         </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="EBB-TH-ANe">
-                        <barButtonItem key="leftBarButtonItem" title="Back" image="back" id="6Bi-vv-4OW"/>
+                        <barButtonItem key="leftBarButtonItem" enabled="NO" title="Back" image="back" id="6Bi-vv-4OW"/>
                         <barButtonItem key="rightBarButtonItem" title="Item" image="more" id="Jbx-pq-EZm">
                             <connections>
                                 <action selector="didPressMore:" destination="vcV-0s-KW8" id="eLo-FE-YlC"/>
@@ -155,6 +209,9 @@
                         </barButtonItem>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics" barStyle="black" translucent="NO"/>
+                    <connections>
+                        <segue destination="isG-yX-v4o" kind="show" identifier="profileSegue" id="O0l-su-9RD"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ipU-Wa-pb9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -230,7 +287,7 @@
                             <button opaque="NO" clipsSubviews="YES" contentMode="scaleAspectFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="svF-MG-Jve">
                                 <rect key="frame" x="0.0" y="64" width="375" height="340"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" image="jplt_full"/>
+                                <state key="normal" image="cover"/>
                                 <connections>
                                     <action selector="didPressCover:" destination="n0k-BC-exw" eventType="touchUpInside" id="IZ9-MQ-UZ9"/>
                                 </connections>
@@ -295,13 +352,16 @@
     </scenes>
     <resources>
         <image name="back" width="50" height="50"/>
-        <image name="jplt_full" width="1200" height="859"/>
+        <image name="cover" width="1024" height="1024"/>
+        <image name="cover_icon" width="100" height="100"/>
+        <image name="jplt_profile" width="640" height="640"/>
+        <image name="jplt_profile_thumb" width="64" height="64"/>
         <image name="media_record" width="100" height="100"/>
         <image name="more" width="50" height="50"/>
         <image name="trash" width="50" height="50"/>
         <image name="upload" width="50" height="50"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Sbh-R6-JkE"/>
+        <segue reference="dMi-G7-A67"/>
     </inferredMetricsTieBreakers>
 </document>
