@@ -19,7 +19,7 @@ class Episode : Model, CustomStringConvertible {
     
     // MARK: Properties
     var id: String
-    var owner: String
+    var owner: String?
     var localURL: URL
     var remoteURL: URL?
     var title: String
@@ -34,19 +34,18 @@ class Episode : Model, CustomStringConvertible {
     init(_ id:String) {
         self.id = id
         self.title = "New Episode"
-        self.owner = Auth.auth().currentUser!.uid
         self.localURL = Episode.createLocalURL(self.id)
         self.createDate = Date()
-        self.profile = Profile(self.owner)
+        self.profile = Profile()
     }
     
     override init() {
         self.id = UUID().uuidString
         self.title = "New Episode"
-        self.owner = Auth.auth().currentUser!.uid
         self.localURL = Episode.createLocalURL(self.id)
         self.createDate = Date()
-        self.profile = Profile(self.owner)
+        self.owner = Auth.auth().currentUser!.uid
+        self.profile = Profiles.instance().get(self.owner!)
     }
     
     deinit {
@@ -92,17 +91,12 @@ class Episode : Model, CustomStringConvertible {
     
     func restore(_ data: [String : Any], completion: ((Episode) -> Void)? = nil) {
         self.title = data["title"] as! String
+        self.owner = data["owner"] as? String
         
-        self.owner = data["owner"] as! String
         let bindings = self.profile.bindings
-        self.profile = Profiles.instance().get(self.owner)
+        self.profile = Profiles.instance().get(self.owner!)
+        self.profile.uid = self.owner!
         profile.bindings.merge(controlBindings: bindings)
-        
-//        self.profile = Profiles.instance().get(self.owner) { (_) in
-//            if (completion != nil) {
-//                completion!(self)
-//            }
-//        }
         
         if let remoteURL = data["remoteURL"] as? String {
             self.remoteURL = URL(string: remoteURL)
@@ -152,7 +146,7 @@ class Episode : Model, CustomStringConvertible {
         var doc: [String: Any] = [
             "id": id,
             "title": title,
-            "owner": owner,
+            "owner": owner!,
             "localURL": localURL.absoluteString,
             "createDate": Timestamp(date:createDate)
         ]

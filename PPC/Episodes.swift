@@ -12,7 +12,7 @@ import Firebase
 import FirebaseAuth
 
 class Episodes : Model {
-    static var PID : String = "testing"
+    static var PID : String = "prealpha"
     
     var listenerRegistration: ListenerRegistration?
     var dict: [String:Episode] = [:]
@@ -58,5 +58,12 @@ class Episodes : Model {
                 self.bindings.set("reload", self.list)
             }
         }
+    }
+    
+    func changePid(pid: String) {
+        Episodes.PID = pid
+        self.dict = [:]
+        self.list = []
+        self.listen()
     }
 }

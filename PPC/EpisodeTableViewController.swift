@@ -54,10 +54,15 @@ class EpisodeTableViewController: UITableViewController {
             self.performSegue(withIdentifier: "profileSegue", sender: sender)
         })
         
+        let testingButton = UIAlertAction(title: "Switch to Testing Podcast", style: .default) { _ in
+            self.episodes.changePid(pid: "testing")
+        }
+        
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
         })
         
         alertController.addAction(profileButton)
+        alertController.addAction(testingButton)
         alertController.addAction(cancelButton)
         
         self.navigationController!.present(alertController, animated: true, completion: nil)

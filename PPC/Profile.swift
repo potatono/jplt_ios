@@ -14,7 +14,7 @@ import FirebaseAuth
 class Profile : Model {
     var listenerRegistration: ListenerRegistration?
     
-    var uid: String
+    var uid: String?
     var remoteImageURL: URL?
     var remoteThumbURL: URL?
     var username: String?
@@ -24,12 +24,12 @@ class Profile : Model {
     }
     
     override init() {
-        self.uid = Auth.auth().currentUser!.uid
+        
     }
     
     func getDocumentReference() -> DocumentReference {
         let db = Firestore.firestore()
-        let doc = db.collection("profiles").document(uid)
+        let doc = db.collection("profiles").document(uid!)
         return doc
     }
     
@@ -40,13 +40,15 @@ class Profile : Model {
     }
     
     func listen() {
-        let docRef = getDocumentReference()
-        listenerRegistration = docRef.addSnapshotListener { (snap, err) in
-            if let err = err {
-                print("Error in listener for \(self): \(err)")
-            }
-            else if let data = snap?.data() {
-                self.restore(data)
+        if uid != nil && listenerRegistration == nil {
+            let docRef = getDocumentReference()
+            listenerRegistration = docRef.addSnapshotListener { (snap, err) in
+                if let err = err {
+                    print("Error in listener for \(self): \(err)")
+                }
+                else if let data = snap?.data() {
+                    self.restore(data)
+                }
             }
         }
     }
@@ -75,7 +77,7 @@ class Profile : Model {
         let docref = self.getDocumentReference()
         
         var doc: [String: Any] = [
-            "uid": uid,
+            "uid": uid!,
             "username": username as Any
         ]
         
@@ -98,7 +100,7 @@ class Profile : Model {
     }
     
     func createRemotePath(_ filename:String) -> String {
-        return "profiles/\(uid)/\(filename)"
+        return "profiles/\(uid!)/\(filename)"
     }
     
     func upload(filename:String, data:Data, completion: @escaping ((URL)->Void)) {
@@ -155,14 +157,16 @@ class Profile : Model {
     }
     
     func ensureExists(doesNotCompletion: @escaping (()->Void)) {
-        let docRef = getDocumentReference()
-        docRef.getDocument { (snap, err) in
-            if let err = err {
-                print("Error getting profile \(err)")
-                doesNotCompletion()
-            }
-            else if snap == nil || !snap!.exists {
-                doesNotCompletion()
+        if uid != nil {
+            let docRef = getDocumentReference()
+            docRef.getDocument { (snap, err) in
+                if let err = err {
+                    print("Error getting profile \(err)")
+                    doesNotCompletion()
+                }
+                else if snap == nil || !snap!.exists {
+                    doesNotCompletion()
+                }
             }
         }
     }

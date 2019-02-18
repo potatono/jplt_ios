@@ -21,7 +21,7 @@ extension Date {
             return month == 1 ? "\(month)" + " " + "month" :
                 "\(month)" + " " + "months ago"
         } else if let day = interval.day, day > 0 {
-            return day == 1 ? "\(day)" + " " + "day" :
+            return day == 1 ? "Yesterday" :
                 "\(day)" + " " + "days ago"
         } else if let hour = interval.hour, hour > 0 {
             return hour == 1 ? "\(hour)" + " " + "hour" :

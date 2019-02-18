@@ -329,19 +329,21 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         _audioTimeObserverToken = _audioPlayer.addPeriodicTimeObserver(forInterval: time, queue: .main) {
             [weak self] time in
             
-            let total = self!._audioPlayer.currentItem!.asset.duration
-            let total_sec = CMTimeGetSeconds(total)
-            let time_sec = CMTimeGetSeconds(time)
-            let remain = total - time
-            
-            self!.scrubSlider.maximumValue = Float(total_sec)
-            self!.scrubSlider.value = Float(time_sec)
-            
-            self!.scrubAtLabel.text = self!.formatTime(time)
-            self!.scrubRemainLabel.text = "-" + self!.formatTime(remain)
-            
-            if time == total {
-                self!.resetPlayback()
+            if let self = self {
+                let total = self._audioPlayer.currentItem!.asset.duration
+                let total_sec = CMTimeGetSeconds(total)
+                let time_sec = CMTimeGetSeconds(time)
+                let remain = total - time
+                
+                self.scrubSlider.maximumValue = Float(total_sec)
+                self.scrubSlider.value = Float(time_sec)
+                
+                self.scrubAtLabel.text = self.formatTime(time)
+                self.scrubRemainLabel.text = "-" + self.formatTime(remain)
+                
+                if time == total {
+                    self.resetPlayback()
+                }
             }
         }
     }
