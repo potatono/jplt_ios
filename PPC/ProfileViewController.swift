@@ -11,10 +11,11 @@ import UIKit
 import Photos
 
 import Kingfisher
+import FirebaseAuth
 
 class ProfileViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
-    var profile: Profile = Profile()
+    var profile: Profile = Profile(Auth.auth().currentUser!.uid)
 
     @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var usernameTextField: UITextField!

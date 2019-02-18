@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class EpisodeTableViewController: UITableViewController {
 
@@ -33,7 +34,7 @@ class EpisodeTableViewController: UITableViewController {
         episodes.addBinding(forTopic: "reload", control: self.tableView)        
         episodes.listen()
 
-        Profile().ensureExists {
+        Profile(Auth.auth().currentUser!.uid).ensureExists {
             self.performSegue(withIdentifier: "profileSegue", sender: nil)
         }
     }
