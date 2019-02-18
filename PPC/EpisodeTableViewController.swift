@@ -53,17 +53,25 @@ class EpisodeTableViewController: UITableViewController {
         let profileButton = UIAlertAction(title: "Edit Profile", style: .default, handler: { (action) -> Void in
             self.performSegue(withIdentifier: "profileSegue", sender: sender)
         })
-        
-        let testingButton = UIAlertAction(title: "Switch to Testing Podcast", style: .default) { _ in
-            self.episodes.changePid(pid: "testing")
+        alertController.addAction(profileButton)
+
+        if Episodes.PID == "prealpha" {
+            let testingButton = UIAlertAction(title: "Switch to Testing Podcast", style: .default) { _ in
+                self.episodes.changePid(pid: "testing")
+            }
+            alertController.addAction(testingButton)
         }
-        
+        else {
+            let testingButton = UIAlertAction(title: "Switch to Alpha Podcast", style: .default) { _ in
+                self.episodes.changePid(pid: "prealpha")
+            }
+            alertController.addAction(testingButton)
+        }
+
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
         })
-        
-        alertController.addAction(profileButton)
-        alertController.addAction(testingButton)
         alertController.addAction(cancelButton)
+
         
         self.navigationController!.present(alertController, animated: true, completion: nil)
     }
