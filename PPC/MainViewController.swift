@@ -38,6 +38,7 @@ class MainViewController: UINavigationController {
         if let user = Auth.auth().currentUser {
             print("[AUTH] User is", user.uid)
             print("[AUTH] User phone is", user.phoneNumber as Any)
+            
         }
         else {
             print("[AUTH] No user")

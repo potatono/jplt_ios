@@ -30,8 +30,12 @@ class EpisodeTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
         
-        episodes.addBinding(forTopic: "reload", control: self.tableView)
+        episodes.addBinding(forTopic: "reload", control: self.tableView)        
         episodes.listen()
+
+        Profile().ensureExists {
+            self.performSegue(withIdentifier: "profileSegue", sender: nil)
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -82,6 +86,8 @@ class EpisodeTableViewController: UITableViewController {
         cell.episode = episode
         episode.addBinding(forTopic: "title", control: cell.titleLabel)
         episode.addBinding(forTopic: "remoteThumbURL", control: cell.coverImageView)
+        episode.addBinding(forTopic: "createDate", control: cell.dateLabel)
+        episode.profile.addBinding(forTopic: "username", control: cell.usernameLabel)
         episode.profile.addBinding(forTopic: "remoteThumbURL", control: cell.profileImageView)
         
         return cell

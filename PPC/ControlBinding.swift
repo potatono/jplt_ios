@@ -9,18 +9,46 @@
 import Foundation
 import UIKit
 
+extension Date {
+    func getElapsedInterval() -> String {
+        
+        let interval = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: self, to: Date())
+        
+        if let year = interval.year, year > 0 {
+            return year == 1 ? "\(year)" + " " + "year" :
+                "\(year)" + " " + "years ago"
+        } else if let month = interval.month, month > 0 {
+            return month == 1 ? "\(month)" + " " + "month" :
+                "\(month)" + " " + "months ago"
+        } else if let day = interval.day, day > 0 {
+            return day == 1 ? "\(day)" + " " + "day" :
+                "\(day)" + " " + "days ago"
+        } else if let hour = interval.hour, hour > 0 {
+            return hour == 1 ? "\(hour)" + " " + "hour" :
+                "\(hour)" + " " + "hours ago"
+        } else if let minute = interval.minute, minute > 0 {
+            return minute == 1 ? "\(minute)" + " " + "minute" :
+                "\(minute)" + " " + "minutes ago"
+        } else if let second = interval.second, second > 0 {
+            return second == 1 ? "\(second)" + " " + "second" :
+                "\(second)" + " " + "seconds ago"
+        } else {
+            return "a moment ago"
+        }
+    }
+}
+
 class ControlBinding {
     var control: UIView
-    var setter: ((UIView, Any) -> Void)?
+    var setter: ((UIView, Any?) -> Void)?
     
-    init(_ control: UIView, setter: ((UIView, Any) -> Void)?) {
+    init(_ control: UIView, setter: ((UIView, Any?) -> Void)?) {
         self.control = control
         self.setter = setter
     }
     
     func set(_ value: Any?) {
-        if let setter = self.setter,
-           let value = value
+        if let setter = self.setter
         {
             setter(control, value)
         }
@@ -33,6 +61,11 @@ class ControlBinding {
                 let value = value as? String
         {
             control.text = value
+        }
+        else if let control = self.control as? UILabel,
+                let value = value as? Date
+        {
+            control.text = value.getElapsedInterval()
         }
         else if let control = self.control as? UIImageView,
                 let value = value as? URL

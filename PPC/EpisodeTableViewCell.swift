@@ -16,6 +16,8 @@ class EpisodeTableViewCell: UITableViewCell {
     @IBOutlet weak var coverImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var profileImageView: UIImageView!
+    @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -37,7 +39,9 @@ class EpisodeTableViewCell: UITableViewCell {
             
             episode.removeBinding(coverImageView)
             episode.removeBinding(titleLabel)
+            episode.removeBinding(dateLabel)
             episode.profile.removeBinding(profileImageView)
+            episode.profile.removeBinding(usernameLabel)
         }
     }
 }

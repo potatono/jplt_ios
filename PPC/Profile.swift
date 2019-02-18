@@ -153,5 +153,18 @@ class Profile : Model {
             })
         }
     }
+    
+    func ensureExists(doesNotCompletion: @escaping (()->Void)) {
+        let docRef = getDocumentReference()
+        docRef.getDocument { (snap, err) in
+            if let err = err {
+                print("Error getting profile \(err)")
+                doesNotCompletion()
+            }
+            else if snap == nil || !snap!.exists {
+                doesNotCompletion()
+            }
+        }
+    }
 }
 

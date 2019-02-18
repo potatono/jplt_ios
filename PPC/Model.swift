@@ -12,7 +12,7 @@ import UIKit
 class Model {
     var bindings: ControlBindings = ControlBindings()
     
-    func addBinding(forTopic: String, control: UIView, setter: ((UIView, Any) -> Void)?) {
+    func addBinding(forTopic: String, control: UIView, setter: ((UIView, Any?) -> Void)?) {
         bindings.addBinding(forTopic: forTopic, control: control, setter: setter)
         setBindings(forTopic: forTopic)
     }

@@ -47,19 +47,14 @@ class Episodes : Model {
                         self.dict.removeValue(forKey: doc.documentID)
                         self.list.removeAll(where: { $0.id == doc.documentID })
                     }
-                    else if (
-                        diff.type == DocumentChangeType.added ||
-                        self.dict.index(forKey:doc.documentID) == nil
-                    ) {
+                    else if (self.dict.index(forKey:doc.documentID) == nil) {
                         let episode = Episode(doc.documentID)
                         self.dict[doc.documentID] = episode
-                        episode.listen()
-                        self.list.append(episode)
-                        
                         self.list.insert(episode, at: Int(diff.newIndex))
+                        episode.listen()
                     }
                 }
-
+                
                 self.bindings.set("reload", self.list)
             }
         }

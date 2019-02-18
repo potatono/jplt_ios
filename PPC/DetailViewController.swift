@@ -49,6 +49,9 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     @IBOutlet weak var scrubAtLabel: UILabel!
     @IBOutlet weak var scrubRemainLabel: UILabel!
     @IBOutlet weak var deleteButton: UIButton!
+    @IBOutlet weak var profileImageView: UIImageView!
+    @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     
     // MARK: Actions
     @IBAction func didPressMedia(_ sender: Any) {
@@ -130,16 +133,10 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         
         episode.addBinding(forTopic: "title", control: titleTextField)
         episode.addBinding(forTopic: "remoteCoverURL", control: coverButton)
-        
-//        titleTextField.text = episode.title
-//
-//        if let url = episode.remoteCoverURL {
-//            coverButton.kf.setImage(with: url, for: UIControl.State.normal)
-//            coverButton.kf.setImage(with: url, for: UIControl.State.disabled)
-//        }
-//        //coverButton.setImage(episode.cover, for: UIControl.State.normal)
-//        //coverButton.setImage(episode.cover, for: UIControl.State.disabled)
-//
+        episode.addBinding(forTopic: "createDate", control: dateLabel)
+        episode.profile.addBinding(forTopic: "username", control: usernameLabel)
+        episode.profile.addBinding(forTopic: "remoteThumbURL", control: profileImageView)
+
         _editable = episode.canEdit()
         titleTextField.isEnabled = _editable
         coverButton.isEnabled = _editable
@@ -152,6 +149,14 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         else {
             mediaButton.isEnabled = _editable
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        episode.removeBinding(titleTextField)
+        episode.removeBinding(coverButton)
+        episode.removeBinding(dateLabel)
+        episode.profile.removeBinding(usernameLabel)
+        episode.profile.removeBinding(profileImageView)
     }
     
     // MARK: Methods
