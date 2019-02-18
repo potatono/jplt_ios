@@ -15,6 +15,8 @@ class EpisodeTableViewController: UITableViewController {
     
     // MARK: Actions
     @IBAction func unwindDetail(unwindSegue: UIStoryboardSegue) {
+        print("unwindDetail")
+
         self.tableView.reloadData()
     }
     
@@ -27,14 +29,18 @@ class EpisodeTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
-
         
-        loadData()
+        episodes.addBinding(forTopic: "reload", control: self.tableView)
+        episodes.listen()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        // self.navigationController!.setToolbarHidden(false, animated: false)
+        tableView.reloadData()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-       // self.navigationController!.setToolbarHidden(false, animated: false)
-        
+    override func viewDidDisappear(_ animated: Bool) {
+        episodes.removeBinding(self.tableView)
     }
 
     @IBAction func didPressMore(_ sender: Any) {
@@ -46,7 +52,6 @@ class EpisodeTableViewController: UITableViewController {
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
         })
-        
         
         alertController.addAction(profileButton)
         alertController.addAction(cancelButton)
@@ -61,7 +66,7 @@ class EpisodeTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return episodes.dict.count
+        return episodes.list.count
     }
 
     
@@ -70,25 +75,11 @@ class EpisodeTableViewController: UITableViewController {
         guard let cell = self.tableView.dequeueReusableCell(withIdentifier: cellIdentifier,
                                                        for: indexPath) as? EpisodeTableViewCell
         else {
-                fatalError("The dequeued cell is not an instance of EpisodeTableViewCell")
+            fatalError("The dequeued cell is not an instance of EpisodeTableViewCell")
         }
         
         let episode = episodes.list[indexPath.row]
-//        cell.titleLabel.text = episode.title
-//
-//        if let url = episode.remoteThumbURL {
-//            cell.coverImageView.kf.setImage(with: url)
-//        }
-//        else if let url = episode.remoteCoverURL {
-//            cell.coverImageView.kf.setImage(with: url)
-//        }
-        //cell.coverImageView.image = episode.cover
-
-//        if let url = episode.profile.remoteThumbURL {
-//            print("Setting profile thumb")
-//            cell.profileImageView.kf.setImage(with: url)
-//        }
-
+        cell.episode = episode
         episode.addBinding(forTopic: "title", control: cell.titleLabel)
         episode.addBinding(forTopic: "remoteThumbURL", control: cell.coverImageView)
         episode.profile.addBinding(forTopic: "remoteThumbURL", control: cell.profileImageView)
@@ -144,13 +135,6 @@ class EpisodeTableViewController: UITableViewController {
                 let indexPath = tableView.indexPath(for: selectedEpisode)
                 detailViewController.episode = episodes.list[indexPath!.row]
             }
-        }
-    }
-    
-    private func loadData() {
-        episodes.addListener { episodes in
-            print("Reloading table..")
-            self.tableView.reloadData()
         }
     }
 }

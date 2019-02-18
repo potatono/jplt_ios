@@ -24,19 +24,13 @@ class Profiles {
         return _instance
     }
     
-    func get(_ uid:String, completion: @escaping ((Profile) -> Void)) -> Profile {
+    func get(_ uid:String) -> Profile {
         if self.lookup[uid] == nil {
             self.lookup[uid] = Profile(uid)
-            self.lookup[uid]!.read(completion:completion)
-        }
-        else {
-            completion(self.lookup[uid]!)
+            self.lookup[uid]!.listen()
         }
         
         return self.lookup[uid]!
     }
-    
-    func get(completion: @escaping ((Profile) -> Void)) {
-        self.get(Auth.auth().currentUser!.uid, completion: completion)
-    }
+
 }

@@ -40,7 +40,7 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
     override func viewDidLoad() {
         profile.addBinding(forTopic: "username", control: self.usernameTextField)
         profile.addBinding(forTopic: "remoteImageURL", control: self.imageButton)
-        profile.read()
+        profile.listen()
         
 //        profile.read() { (_) in
 //            if let username = self.profile.username {

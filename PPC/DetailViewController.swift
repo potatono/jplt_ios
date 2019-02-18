@@ -131,7 +131,6 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         episode.addBinding(forTopic: "title", control: titleTextField)
         episode.addBinding(forTopic: "remoteCoverURL", control: coverButton)
         
-        
 //        titleTextField.text = episode.title
 //
 //        if let url = episode.remoteCoverURL {
@@ -215,7 +214,6 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
             self.present(imagePicker, animated: true, completion: nil)
         }
     }
-    
     
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage!, editingInfo: [NSObject : AnyObject]!)
     {

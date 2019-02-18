@@ -37,13 +37,27 @@ class ControlBinding {
         else if let control = self.control as? UIImageView,
                 let value = value as? URL
         {
-            control.kf.setImage(with: value)
+            if value.scheme == "asset" {
+                control.image = UIImage(named: value.host!)
+            }
+            else {
+                control.kf.setImage(with: value)
+            }
         }
         else if let control = self.control as? UIButton,
                 let value = value as? URL
         {
-            control.kf.setImage(with: value, for: UIControl.State.normal)
-            control.kf.setImage(with: value, for: UIControl.State.disabled)
+            if value.scheme == "asset" {
+                control.setImage(UIImage(named: value.host!), for: UIControl.State.normal)
+                control.setImage(UIImage(named: value.host!), for: UIControl.State.disabled)
+            }
+            else {
+                control.kf.setImage(with: value, for: UIControl.State.normal)
+                control.kf.setImage(with: value, for: UIControl.State.disabled)
+            }
+        }
+        else if let control = self.control as? UITableView {
+            control.reloadData()
         }
     }
 }
@@ -52,14 +66,23 @@ class ControlBindings {
     var bindings: [String:[ControlBinding]] = [:]
     var controls: [UIView:(String, ControlBinding)] = [:]
     
-    func addBinding(forTopic:String, control:UIView, setter:((UIView, Any)-> Void)?) {
+    func addBinding(forTopic:String, binding: ControlBinding) {
+        if controls[binding.control] != nil {
+            print("Control is already bound.")
+            return
+        }
+        
         if bindings[forTopic] == nil {
             bindings[forTopic] = []
         }
         
-        let binding = ControlBinding(control, setter: setter)
         bindings[forTopic]!.append(binding)
-        controls[control] = (forTopic, binding)
+        controls[binding.control] = (forTopic, binding)
+    }
+    
+    func addBinding(forTopic:String, control:UIView, setter:((UIView, Any)-> Void)?) {
+        let binding = ControlBinding(control, setter: setter)
+        addBinding(forTopic: forTopic, binding: binding)
     }
     
     func addBinding(forTopic:String, control: UIView) {
@@ -71,6 +94,9 @@ class ControlBindings {
             bindings[forTopic]!.removeAll(where: { $0 === binding })
             controls.removeValue(forKey: control)
         }
+        else {
+            print("Binding not found to remove")
+        }
     }
     
     func set(_ forTopic:String, _ value:Any?) {
@@ -78,6 +104,16 @@ class ControlBindings {
             for binding in bindings {
                 binding.set(value)
             }
+        }
+    }
+    
+    func merge(controlBindings: ControlBindings) {
+        controlBindings.bindings.forEach { (topicBinds) in
+            let (topic, bindings) = topicBinds
+            
+            bindings.forEach({ (binding) in
+                self.addBinding(forTopic: topic, binding: binding)
+            })
         }
     }
 }

@@ -14,22 +14,31 @@ class Model {
     
     func addBinding(forTopic: String, control: UIView, setter: ((UIView, Any) -> Void)?) {
         bindings.addBinding(forTopic: forTopic, control: control, setter: setter)
-        setBindings()
+        setBindings(forTopic: forTopic)
     }
     
     func addBinding(forTopic: String, control: UIView) {
         addBinding(forTopic: forTopic, control: control, setter: nil)
     }
     
+    func removeBinding(_ control: UIView) {
+        bindings.removeBinding(control)
+    }
+    
     func setBindings() {
+        setBindings(forTopic:nil)
+    }
+    
+    func setBindings(forTopic:String?) {
         let mirror = Mirror(reflecting: self)
         
         for child in mirror.children {
             if let label = child.label {
-                if label != "bindings" {
+                if label != "bindings" && (forTopic == nil || forTopic == label)
+                {
                     bindings.set(label, child.value)
                 }
             }
         }
-    }
+    }    
 }

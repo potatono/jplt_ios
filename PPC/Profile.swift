@@ -12,6 +12,8 @@ import Firebase
 import FirebaseAuth
 
 class Profile : Model {
+    var listenerRegistration: ListenerRegistration?
+    
     var uid: String
     var remoteImageURL: URL?
     var remoteThumbURL: URL?
@@ -25,45 +27,52 @@ class Profile : Model {
         self.uid = Auth.auth().currentUser!.uid
     }
     
-    func getDocument() -> DocumentReference {
+    func getDocumentReference() -> DocumentReference {
         let db = Firestore.firestore()
         let doc = db.collection("profiles").document(uid)
         return doc
     }
     
-    func read(completion: ((Profile) -> Void)? = nil) {
-        print("Reading profile..")
-        let doc = getDocument()
-        doc.getDocument { (doc: DocumentSnapshot?, err: Error?) in
-            if err != nil {
-                print("Error getting profile \(err!)")
+    deinit {
+        if let listenerRegistration = self.listenerRegistration {
+            listenerRegistration.remove()
+        }
+    }
+    
+    func listen() {
+        let docRef = getDocumentReference()
+        listenerRegistration = docRef.addSnapshotListener { (snap, err) in
+            if let err = err {
+                print("Error in listener for \(self): \(err)")
             }
-            else if let data = doc!.data() {
-                self.username = data["username"] as? String
-                self.bindings.set("username", self.username)
-
-                if (data["remoteImageURL"] != nil) {
-                    self.remoteImageURL = URL(string: (data["remoteImageURL"] as? String)!)
-                    self.bindings.set("remoteImageURL", self.remoteImageURL)
-                }
-                
-                if (data["remoteThumbURL"] != nil) {
-                    self.remoteThumbURL = URL(string: (data["remoteThumbURL"] as? String)!)
-                    self.bindings.set("remoteThumbURL", self.remoteThumbURL)
-                }
-                
-                if completion != nil {
-                    print("Profile read completion..")
-                    completion!(self)
-                }
+            else if let data = snap?.data() {
+                self.restore(data)
             }
         }
     }
     
-    func save() {
-        print("Saving profile..")
+    func restore(_ data: [String:Any]) {
+        self.username = data["username"] as? String
         
-        let docref = self.getDocument()
+        if let remoteImageURL = data["remoteImageURL"] as? String {
+            self.remoteImageURL = URL(string: remoteImageURL)
+        }
+        else {
+            self.remoteImageURL = URL(string: "asset://jplt_profile")
+        }
+        
+        if let remoteThumbURL = data["remoteThumbURL"] as? String {
+            self.remoteThumbURL = URL(string: remoteThumbURL)
+        }
+        else {
+            self.remoteThumbURL = URL(string: "asset://jplt_profile_thumb")
+        }
+
+        self.setBindings()
+    }
+    
+    func save() {
+        let docref = self.getDocumentReference()
         
         var doc: [String: Any] = [
             "uid": uid,
@@ -78,13 +87,14 @@ class Profile : Model {
             doc["remoteThumbURL"] = remoteThumbURL!.absoluteString
         }
         
-        let callback: ((Error?) -> Void) = { err in
-            if err != nil {
-                print ("Error writing document \(err!)")
+        docref.setData(doc) { err in
+            if let err = err {
+                print ("Error writing profile \(err)")
+            }
+            else if self.listenerRegistration == nil {
+                self.listen()
             }
         }
-        
-        docref.setData(doc, completion: callback)
     }
     
     func createRemotePath(_ filename:String) -> String {
