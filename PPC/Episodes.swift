@@ -11,20 +11,28 @@ import Foundation
 import Firebase
 import FirebaseAuth
 
-class Episodes {
+class Episodes : Model {
+    static var PID : String = "testing"
+    
+    var listenerRegistration: ListenerRegistration?
     var dict: [String:Episode] = [:]
     var list: [Episode] = []
     
+    deinit {
+        if let listenerRegistration = listenerRegistration {
+            listenerRegistration.remove()
+        }
+    }
+    
     func getCollection() -> CollectionReference {
         let db = Firestore.firestore()
-        let pid = "prealpha"
+        let pid = Episodes.PID
         let col = db.collection("podcasts").document(pid).collection("episodes")
         
         return col
     }
     
-    func addListener(completion: @escaping ([Episode])->Void) {
-        Episode.listener = completion
+    func listen() {
         let col = getCollection()
         
         col.order(by: "createDate", descending: true).addSnapshotListener { (snap, err) in
@@ -34,28 +42,21 @@ class Episodes {
             else {
                 for diff in snap!.documentChanges {
                     let doc = diff.document
-                    let data = doc.data()
-                    let episode = Episode(doc.documentID)
                     
                     if diff.type == DocumentChangeType.removed {
                         self.dict.removeValue(forKey: doc.documentID)
+                        self.list.removeAll(where: { $0.id == doc.documentID })
                     }
-                    else {
-                        episode.restore(data) { episode in
-                            completion(self.list)
-                        }
+                    else if (self.dict.index(forKey:doc.documentID) == nil) {
+                        let episode = Episode(doc.documentID)
                         self.dict[doc.documentID] = episode
+                        self.list.insert(episode, at: Int(diff.newIndex))
+                        episode.listen()
                     }
                 }
-                self.list = Array(self.dict.values)
                 
-                // We need to resort because we're converting list to hash.
-                self.list.sort() { (a,b) in
-                    return a.createDate < b.createDate;
-                }
-                completion(self.list)
+                self.bindings.set("reload", self.list)
             }
         }
     }
-    
 }

@@ -49,6 +49,9 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     @IBOutlet weak var scrubAtLabel: UILabel!
     @IBOutlet weak var scrubRemainLabel: UILabel!
     @IBOutlet weak var deleteButton: UIButton!
+    @IBOutlet weak var profileImageView: UIImageView!
+    @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     
     // MARK: Actions
     @IBAction func didPressMedia(_ sender: Any) {
@@ -128,15 +131,17 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        titleTextField.text = episode.title
-        coverButton.setImage(episode.cover, for: UIControl.State.normal)
-        coverButton.setImage(episode.cover, for: UIControl.State.disabled)
-        
+        episode.addBinding(forTopic: "title", control: titleTextField)
+        episode.addBinding(forTopic: "remoteCoverURL", control: coverButton)
+        episode.addBinding(forTopic: "createDate", control: dateLabel)
+        episode.profile.addBinding(forTopic: "username", control: usernameLabel)
+        episode.profile.addBinding(forTopic: "remoteThumbURL", control: profileImageView)
+
         _editable = episode.canEdit()
         titleTextField.isEnabled = _editable
         coverButton.isEnabled = _editable
         deleteButton.isEnabled = _editable
-        
+
         if episode.remoteURL != nil {
             setState(.stopped)
             scrubSlider.isEnabled = true
@@ -144,6 +149,14 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         else {
             mediaButton.isEnabled = _editable
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        episode.removeBinding(titleTextField)
+        episode.removeBinding(coverButton)
+        episode.removeBinding(dateLabel)
+        episode.profile.removeBinding(usernameLabel)
+        episode.profile.removeBinding(profileImageView)
     }
     
     // MARK: Methods
@@ -207,7 +220,6 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         }
     }
     
-    
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage!, editingInfo: [NSObject : AnyObject]!)
     {
         self.dismiss(animated: true, completion: { () -> Void in
@@ -215,10 +227,8 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         })
         
         print("Setting image")
-        
-        episode.cover = image
         coverButton.setImage(image, for:UIControl.State.normal)
-        episode.uploadCover()
+        episode.uploadCover(image)
     }
     
     func ensureRecorder() {

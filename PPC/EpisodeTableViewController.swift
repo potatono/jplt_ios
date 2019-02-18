@@ -15,6 +15,8 @@ class EpisodeTableViewController: UITableViewController {
     
     // MARK: Actions
     @IBAction func unwindDetail(unwindSegue: UIStoryboardSegue) {
+        print("unwindDetail")
+
         self.tableView.reloadData()
     }
     
@@ -27,36 +29,35 @@ class EpisodeTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
-
         
-        loadData()
+        episodes.addBinding(forTopic: "reload", control: self.tableView)        
+        episodes.listen()
+
+        Profile().ensureExists {
+            self.performSegue(withIdentifier: "profileSegue", sender: nil)
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        // self.navigationController!.setToolbarHidden(false, animated: false)
+        tableView.reloadData()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-       // self.navigationController!.setToolbarHidden(false, animated: false)
-        
+    override func viewDidDisappear(_ animated: Bool) {
+        episodes.removeBinding(self.tableView)
     }
 
     @IBAction func didPressMore(_ sender: Any) {
-        print("Show Actionsheet")
         let alertController = UIAlertController(title: "Show", message: nil, preferredStyle: .actionSheet)
-        
-        let sendButton = UIAlertAction(title: "Manage Subscribers", style: .default, handler: { (action) -> Void in
-            print("Ok button tapped")
+
+        let profileButton = UIAlertAction(title: "Edit Profile", style: .default, handler: { (action) -> Void in
+            self.performSegue(withIdentifier: "profileSegue", sender: sender)
         })
-        
-        let  deleteButton = UIAlertAction(title: "Show Details", style: .default, handler: { (action) -> Void in
-            print("Delete button tapped")
-        })
-        
         
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
-            print("Cancel button tapped")
         })
         
-        
-        alertController.addAction(sendButton)
-        alertController.addAction(deleteButton)
+        alertController.addAction(profileButton)
         alertController.addAction(cancelButton)
         
         self.navigationController!.present(alertController, animated: true, completion: nil)
@@ -69,7 +70,7 @@ class EpisodeTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return episodes.dict.count
+        return episodes.list.count
     }
 
     
@@ -78,13 +79,17 @@ class EpisodeTableViewController: UITableViewController {
         guard let cell = self.tableView.dequeueReusableCell(withIdentifier: cellIdentifier,
                                                        for: indexPath) as? EpisodeTableViewCell
         else {
-                fatalError("The dequeued cell is not an instance of EpisodeTableViewCell")
+            fatalError("The dequeued cell is not an instance of EpisodeTableViewCell")
         }
         
         let episode = episodes.list[indexPath.row]
-        cell.titleLabel.text = episode.title
-        cell.coverImageView.image = episode.cover
-
+        cell.episode = episode
+        episode.addBinding(forTopic: "title", control: cell.titleLabel)
+        episode.addBinding(forTopic: "remoteThumbURL", control: cell.coverImageView)
+        episode.addBinding(forTopic: "createDate", control: cell.dateLabel)
+        episode.profile.addBinding(forTopic: "username", control: cell.usernameLabel)
+        episode.profile.addBinding(forTopic: "remoteThumbURL", control: cell.profileImageView)
+        
         return cell
     }
     
@@ -136,12 +141,6 @@ class EpisodeTableViewController: UITableViewController {
                 let indexPath = tableView.indexPath(for: selectedEpisode)
                 detailViewController.episode = episodes.list[indexPath!.row]
             }
-        }
-    }
-    
-    private func loadData() {
-        episodes.addListener { episodes in
-            self.tableView.reloadData()
         }
     }
 }
