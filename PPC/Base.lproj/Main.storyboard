@@ -78,7 +78,7 @@
                                 <state key="normal" title="Submit"/>
                                 <connections>
                                     <action selector="didSubmitNumber:" destination="5KK-3V-wn9" eventType="touchUpInside" id="Qj8-85-POR"/>
-                                    <segue destination="ocB-7V-YIh" kind="show" identifier="authCodeSegue" id="8gX-9O-nbP"/>
+                                    <segue destination="ocB-7V-YIh" kind="showDetail" identifier="authCodeSegue" id="8gX-9O-nbP"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -131,7 +131,7 @@
                     <navigationItem key="navigationItem" id="f8a-z1-iC9"/>
                     <connections>
                         <outlet property="codeTextField" destination="pSj-qA-5tc" id="E25-Ur-hPr"/>
-                        <segue destination="yWZ-Dl-3XR" kind="unwind" unwindAction="unwindAuthWithUnwindSegue:" id="kAL-De-rBp"/>
+                        <segue destination="yWZ-Dl-3XR" kind="unwind" identifier="unwindAuthSegue" unwindAction="unwindAuthWithUnwindSegue:" id="SiQ-kk-pNM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wW8-1F-zSs" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -232,6 +232,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics" barStyle="black" translucent="NO"/>
                     <connections>
                         <segue destination="isG-yX-v4o" kind="show" identifier="profileSegue" id="O0l-su-9RD"/>
+                        <segue destination="5KK-3V-wn9" kind="presentation" identifier="authPhoneSegue" id="pC6-4D-IbJ"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ipU-Wa-pb9" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -384,7 +385,7 @@
                     </toolbar>
                     <connections>
                         <segue destination="vcV-0s-KW8" kind="relationship" relationship="rootViewController" id="zuR-HG-VkA"/>
-                        <segue destination="5KK-3V-wn9" kind="show" identifier="authPhoneSegue" id="i2K-By-wHq"/>
+                        <segue destination="5KK-3V-wn9" kind="presentation" identifier="authPhoneSegue" id="i2K-By-wHq"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ki8-yT-dN9" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -405,5 +406,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="dMi-G7-A67"/>
+        <segue reference="pC6-4D-IbJ"/>
     </inferredMetricsTieBreakers>
 </document>
