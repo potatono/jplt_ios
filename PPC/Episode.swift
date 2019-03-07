@@ -128,8 +128,8 @@ class Episode : Model, CustomStringConvertible {
         self.profile.setBindings()
     }
     
-    func createRemotePath(_ filename:String="sound.m4a") -> String {
-        return "podcasts/\(owner)/episodes/\(id)/\(filename)"
+    override func createRemotePath(_ filename:String="sound.m4a") -> String {
+        return "podcasts/\(String(describing: owner))/episodes/\(id)/\(filename)"
     }
 
     func getPlaybackURL() -> URL? {
@@ -197,34 +197,6 @@ class Episode : Model, CustomStringConvertible {
                 else {
                     self.remoteURL = url!
                     self.save()
-                }
-            }
-        }
-    }
-    
-    func upload(filename:String, data:Data, completion: @escaping ((URL)->Void)) {
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        let fileRef = storageRef.child(self.createRemotePath(filename))
-        
-        print("Uploading \(filename)..")
-        
-        fileRef.putData(data, metadata: nil) { metadata, error in
-            guard let metadata = metadata else {
-                print("Error occured while uploading file: \(error!)")
-                return
-            }
-            // Metadata contains file metadata such as size, content-type.
-            let size = metadata.size
-            print("Uploaded " + String(size) + " bytes")
-            
-            fileRef.downloadURL { url, err in
-                if err != nil {
-                    print("Error while getting download URL \(err!)")
-                }
-                else {
-                    print("Download URL is \(url!)")
-                    completion(url!)
                 }
             }
         }

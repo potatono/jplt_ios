@@ -11,6 +11,10 @@
 		5ECB2DDFD6127BE4A6A75389 /* Pods_PPCUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5971FB332826F3263CC6EB19 /* Pods_PPCUITests.framework */; };
 		D003A7062217A1CF00DCC2CD /* ControlBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D003A7052217A1CF00DCC2CD /* ControlBinding.swift */; };
 		D003A7082217B64B00DCC2CD /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = D003A7072217B64B00DCC2CD /* Model.swift */; };
+		D003A70A2225D93600DCC2CD /* SegueFromLeft.swift in Sources */ = {isa = PBXBuildFile; fileRef = D003A7092225D93600DCC2CD /* SegueFromLeft.swift */; };
+		D003A70C222727AA00DCC2CD /* Podcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = D003A70B222727AA00DCC2CD /* Podcast.swift */; };
+		D003A7102228679300DCC2CD /* PodcastsCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D003A70F2228679300DCC2CD /* PodcastsCollectionViewController.swift */; };
+		D003A71222286C3800DCC2CD /* PodcastsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D003A71122286C3800DCC2CD /* PodcastsCollectionViewCell.swift */; };
 		D014287621C59EE800D0A414 /* Episodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D014287521C59EE800D0A414 /* Episodes.swift */; };
 		D0685DEE21921C1A0092E0FE /* UIVUMeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0685DED21921C1A0092E0FE /* UIVUMeter.swift */; };
 		D0685DF02193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
@@ -64,6 +68,10 @@
 		CEFA191C336962A2CC63148C /* Pods-PPCUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PPCUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-PPCUITests/Pods-PPCUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		D003A7052217A1CF00DCC2CD /* ControlBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlBinding.swift; sourceTree = "<group>"; };
 		D003A7072217B64B00DCC2CD /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		D003A7092225D93600DCC2CD /* SegueFromLeft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegueFromLeft.swift; sourceTree = "<group>"; };
+		D003A70B222727AA00DCC2CD /* Podcast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Podcast.swift; sourceTree = "<group>"; };
+		D003A70F2228679300DCC2CD /* PodcastsCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastsCollectionViewController.swift; sourceTree = "<group>"; };
+		D003A71122286C3800DCC2CD /* PodcastsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastsCollectionViewCell.swift; sourceTree = "<group>"; };
 		D014287521C59EE800D0A414 /* Episodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Episodes.swift; sourceTree = "<group>"; };
 		D0685DED21921C1A0092E0FE /* UIVUMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIVUMeter.swift; sourceTree = "<group>"; };
 		D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -179,6 +187,10 @@
 				D0C2441D2216015B0058DEA9 /* Profiles.swift */,
 				D003A7052217A1CF00DCC2CD /* ControlBinding.swift */,
 				D003A7072217B64B00DCC2CD /* Model.swift */,
+				D003A7092225D93600DCC2CD /* SegueFromLeft.swift */,
+				D003A70B222727AA00DCC2CD /* Podcast.swift */,
+				D003A70F2228679300DCC2CD /* PodcastsCollectionViewController.swift */,
+				D003A71122286C3800DCC2CD /* PodcastsCollectionViewCell.swift */,
 			);
 			path = PPC;
 			sourceTree = "<group>";
@@ -468,11 +480,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				D003A7082217B64B00DCC2CD /* Model.swift in Sources */,
+				D003A70C222727AA00DCC2CD /* Podcast.swift in Sources */,
 				D0F5F40921C1B94300EB65CE /* EpisodeTableViewCell.swift in Sources */,
 				D0C2441C2215F2D50058DEA9 /* Profile.swift in Sources */,
+				D003A71222286C3800DCC2CD /* PodcastsCollectionViewCell.swift in Sources */,
 				D014287621C59EE800D0A414 /* Episodes.swift in Sources */,
+				D003A7102228679300DCC2CD /* PodcastsCollectionViewController.swift in Sources */,
 				D003A7062217A1CF00DCC2CD /* ControlBinding.swift in Sources */,
 				D0947CB9219091A900394049 /* AppDelegate.swift in Sources */,
+				D003A70A2225D93600DCC2CD /* SegueFromLeft.swift in Sources */,
 				D0F5F40521BADB7B00EB65CE /* AuthCodeViewController.swift in Sources */,
 				D0F5F40721C1A9D000EB65CE /* DetailViewController.swift in Sources */,
 				D0685DEE21921C1A0092E0FE /* UIVUMeter.swift in Sources */,

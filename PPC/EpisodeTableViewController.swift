@@ -33,15 +33,15 @@ class EpisodeTableViewController: UITableViewController {
         
         episodes.addBinding(forTopic: "reload", control: self.tableView)        
         episodes.listen()
-
-        Profile(Auth.auth().currentUser!.uid).ensureExists {
-            self.performSegue(withIdentifier: "profileSegue", sender: nil)
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         // self.navigationController!.setToolbarHidden(false, animated: false)
         tableView.reloadData()
+
+        Profiles.me().ensureExists {
+            self.performSegue(withIdentifier: "profileSegue", sender: nil)
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -69,6 +69,16 @@ class EpisodeTableViewController: UITableViewController {
             alertController.addAction(testingButton)
         }
 
+        let logoutButton = UIAlertAction(title: "Logout", style: .default) { _ in
+            do {
+                try Auth.auth().signOut()
+                self.performSegue(withIdentifier: "authPhoneSegue", sender: self)
+
+            }
+            catch _ { print("Sign Out Failed.") }
+        }
+        alertController.addAction(logoutButton)
+        
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
         })
         alertController.addAction(cancelButton)
