@@ -9,10 +9,11 @@
 import UIKit
 import FirebaseAuth
 
-class EpisodeTableViewController: UITableViewController {
+class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate {
 
     // MARK: Properties
     var episodes = Episodes()
+    var podcast = Podcast(Episodes.PID)
     
     // MARK: Actions
     @IBAction func unwindDetail(unwindSegue: UIStoryboardSegue) {
@@ -33,6 +34,9 @@ class EpisodeTableViewController: UITableViewController {
         
         episodes.addBinding(forTopic: "reload", control: self.tableView)        
         episodes.listen()
+        
+        podcast.addBinding(forTopic: "name", control: self)
+        podcast.listen()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -48,6 +52,14 @@ class EpisodeTableViewController: UITableViewController {
         episodes.removeBinding(self.tableView)
     }
 
+    func podcastChangedTo(pid: String) {
+        self.episodes.changePid(pid: pid)
+        
+        podcast = Podcast(pid)
+        podcast.addBinding(forTopic: "name", control: self)
+        podcast.listen()
+    }
+    
     @IBAction func didPressMore(_ sender: Any) {
         let alertController = UIAlertController(title: "Show", message: nil, preferredStyle: .actionSheet)
 
@@ -56,18 +68,18 @@ class EpisodeTableViewController: UITableViewController {
         })
         alertController.addAction(profileButton)
 
-        if Episodes.PID == "prealpha" {
-            let testingButton = UIAlertAction(title: "Switch to Testing Podcast", style: .default) { _ in
-                self.episodes.changePid(pid: "testing")
-            }
-            alertController.addAction(testingButton)
-        }
-        else {
-            let testingButton = UIAlertAction(title: "Switch to Alpha Podcast", style: .default) { _ in
-                self.episodes.changePid(pid: "prealpha")
-            }
-            alertController.addAction(testingButton)
-        }
+//        if Episodes.PID == "prealpha" {
+//            let testingButton = UIAlertAction(title: "Switch to Testing Podcast", style: .default) { _ in
+//                self.episodes.changePid(pid: "testing")
+//            }
+//            alertController.addAction(testingButton)
+//        }
+//        else {
+//            let testingButton = UIAlertAction(title: "Switch to Alpha Podcast", style: .default) { _ in
+//                self.episodes.changePid(pid: "prealpha")
+//            }
+//            alertController.addAction(testingButton)
+//        }
 
         let logoutButton = UIAlertAction(title: "Logout", style: .default) { _ in
             do {
@@ -165,6 +177,9 @@ class EpisodeTableViewController: UITableViewController {
                 let indexPath = tableView.indexPath(for: selectedEpisode)
                 detailViewController.episode = episodes.list[indexPath!.row]
             }
+        }
+        else if let podcastViewController = segue.destination as? PodcastsCollectionViewController {
+            podcastViewController.changeDelegate = self
         }
     }
 }

@@ -15,16 +15,16 @@ import FirebaseAuth
 class Model {
     var bindings: ControlBindings = ControlBindings()
     
-    func addBinding(forTopic: String, control: UIView, setter: ((UIView, Any?) -> Void)?) {
+    func addBinding(forTopic: String, control: NSObject, setter: ((NSObject, Any?) -> Void)?) {
         bindings.addBinding(forTopic: forTopic, control: control, setter: setter)
         setBindings(forTopic: forTopic)
     }
     
-    func addBinding(forTopic: String, control: UIView) {
+    func addBinding(forTopic: String, control: NSObject) {
         addBinding(forTopic: forTopic, control: control, setter: nil)
     }
     
-    func removeBinding(_ control: UIView) {
+    func removeBinding(_ control: NSObject) {
         bindings.removeBinding(control)
     }
     

@@ -222,9 +222,9 @@
                         </barButtonItem>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="EBB-TH-ANe">
-                        <barButtonItem key="leftBarButtonItem" title="Back" image="back" id="6Bi-vv-4OW">
+                        <barButtonItem key="leftBarButtonItem" title="Podcasts" image="albums" id="6Bi-vv-4OW">
                             <connections>
-                                <segue destination="Bzn-up-7Y2" kind="custom" customClass="SegueFromLeft" customModule="PPC" customModuleProvider="target" id="jAw-Xs-BYN"/>
+                                <segue destination="Bzn-up-7Y2" kind="show" id="jAw-Xs-BYN"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" title="Item" image="more" id="Jbx-pq-EZm">
@@ -374,7 +374,7 @@
             <objects>
                 <collectionViewController id="Bzn-up-7Y2" customClass="PodcastsCollectionViewController" customModule="PPC" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="vrl-uO-sS5">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="559"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="FoT-zc-cjS">
@@ -450,7 +450,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="back" width="50" height="50"/>
+        <image name="albums" width="50" height="50"/>
         <image name="cover" width="1024" height="1024"/>
         <image name="cover_icon" width="100" height="100"/>
         <image name="jplt_full" width="1200" height="859"/>
