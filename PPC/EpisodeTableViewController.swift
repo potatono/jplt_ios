@@ -30,8 +30,7 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
-        
+        // self.navigationItem.rightBarButtonItem = self.editButtonItem        
         episodes.addBinding(forTopic: "reload", control: self.tableView)        
         episodes.listen()
         
@@ -39,7 +38,18 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         podcast.listen()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if let uid = Auth.auth().currentUser?.uid {
+            Profile(uid).ensureExists {
+                self.performSegue(withIdentifier: "profileSegue", sender: nil)
+            }
+        }
+        
+        episodes.addBinding(forTopic: "reload", control: self.tableView)
+        episodes.listen()
+
         // self.navigationController!.setToolbarHidden(false, animated: false)
         tableView.reloadData()
 

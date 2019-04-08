@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 extension Date {
     func getElapsedInterval() -> String {
@@ -85,8 +86,10 @@ class ControlBinding {
                 control.setImage(UIImage(named: value.host!), for: UIControl.State.disabled)
             }
             else {
-                control.kf.setImage(with: value, for: UIControl.State.normal)
-                control.kf.setImage(with: value, for: UIControl.State.disabled)
+                let processor = CroppingImageProcessor(size: control.frame.size)
+                
+                control.kf.setImage(with: value, for: UIControl.State.normal, options: [ .processor(processor) ])
+                control.kf.setImage(with: value, for: UIControl.State.disabled, options: [ .processor(processor) ])
             }
         }
         else if let control = self.control as? UITableView {

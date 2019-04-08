@@ -52,6 +52,8 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var coverButtonWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var coverButtonHeightConstraint: NSLayoutConstraint!
     
     // MARK: Actions
     @IBAction func didPressMedia(_ sender: Any) {
@@ -130,7 +132,8 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        layoutControls()
+
         episode.addBinding(forTopic: "title", control: titleTextField)
         episode.addBinding(forTopic: "remoteCoverURL", control: coverButton)
         episode.addBinding(forTopic: "createDate", control: dateLabel)
@@ -149,6 +152,21 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         else {
             mediaButton.isEnabled = _editable
         }
+        
+    }
+    
+    func layoutControls() {
+        let screenSize = UIScreen.main.bounds
+        let screenHeight = screenSize.height
+
+        
+        print("Resizing coverButton")
+        let size = screenHeight / 2
+        
+        coverButtonWidthConstraint.constant = size
+        coverButtonHeightConstraint.constant = size
+        coverButton.layoutIfNeeded()
+        titleTextField.layoutIfNeeded()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
