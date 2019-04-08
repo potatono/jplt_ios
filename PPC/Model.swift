@@ -9,19 +9,22 @@
 import Foundation
 import UIKit
 
+import Firebase
+import FirebaseAuth
+
 class Model {
     var bindings: ControlBindings = ControlBindings()
     
-    func addBinding(forTopic: String, control: UIView, setter: ((UIView, Any?) -> Void)?) {
+    func addBinding(forTopic: String, control: NSObject, setter: ((NSObject, Any?) -> Void)?) {
         bindings.addBinding(forTopic: forTopic, control: control, setter: setter)
         setBindings(forTopic: forTopic)
     }
     
-    func addBinding(forTopic: String, control: UIView) {
+    func addBinding(forTopic: String, control: NSObject) {
         addBinding(forTopic: forTopic, control: control, setter: nil)
     }
     
-    func removeBinding(_ control: UIView) {
+    func removeBinding(_ control: NSObject) {
         bindings.removeBinding(control)
     }
     
@@ -40,5 +43,37 @@ class Model {
                 }
             }
         }
-    }    
+    }
+    
+    func createRemotePath(_ filename:String) -> String {
+        return filename
+    }
+    
+    func upload(filename:String, data:Data, completion: @escaping ((URL)->Void)) {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        let fileRef = storageRef.child(self.createRemotePath(filename))
+        
+        print("Uploading \(filename)..")
+        
+        fileRef.putData(data, metadata: nil) { metadata, error in
+            guard let metadata = metadata else {
+                print("Error occured while uploading file: \(error!)")
+                return
+            }
+            // Metadata contains file metadata such as size, content-type.
+            let size = metadata.size
+            print("Uploaded " + String(size) + " bytes")
+            
+            fileRef.downloadURL { url, err in
+                if err != nil {
+                    print("Error while getting download URL \(err!)")
+                }
+                else {
+                    print("Download URL is \(url!)")
+                    completion(url!)
+                }
+            }
+        }
+    }
 }

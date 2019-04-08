@@ -40,10 +40,10 @@ extension Date {
 }
 
 class ControlBinding {
-    var control: UIView
-    var setter: ((UIView, Any?) -> Void)?
+    var control: NSObject
+    var setter: ((NSObject, Any?) -> Void)?
     
-    init(_ control: UIView, setter: ((UIView, Any?) -> Void)?) {
+    init(_ control: NSObject, setter: ((NSObject, Any?) -> Void)?) {
         self.control = control
         self.setter = setter
     }
@@ -95,12 +95,17 @@ class ControlBinding {
         else if let control = self.control as? UITableView {
             control.reloadData()
         }
+        else if let control = self.control as? UIViewController,
+                let value = value as? String
+        {
+            control.title = value
+        }
     }
 }
 
 class ControlBindings {
     var bindings: [String:[ControlBinding]] = [:]
-    var controls: [UIView:(String, ControlBinding)] = [:]
+    var controls: [NSObject:(String, ControlBinding)] = [:]
     
     func addBinding(forTopic:String, binding: ControlBinding) {
         if controls[binding.control] != nil {
@@ -116,16 +121,16 @@ class ControlBindings {
         controls[binding.control] = (forTopic, binding)
     }
     
-    func addBinding(forTopic:String, control:UIView, setter:((UIView, Any)-> Void)?) {
+    func addBinding(forTopic:String, control:NSObject, setter:((NSObject, Any)-> Void)?) {
         let binding = ControlBinding(control, setter: setter)
         addBinding(forTopic: forTopic, binding: binding)
     }
     
-    func addBinding(forTopic:String, control: UIView) {
+    func addBinding(forTopic:String, control: NSObject) {
         addBinding(forTopic:forTopic, control:control, setter:nil)
     }
     
-    func removeBinding(_ control: UIView) {
+    func removeBinding(_ control: NSObject) {
         if let (forTopic, binding) = controls[control] {
             bindings[forTopic]!.removeAll(where: { $0 === binding })
             controls.removeValue(forKey: control)

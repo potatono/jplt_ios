@@ -18,6 +18,7 @@ class Profile : Model {
     var remoteImageURL: URL?
     var remoteThumbURL: URL?
     var username: String?
+    var subscriptions: [String]?
 
     init(_ uid: String) {
         self.uid = uid
@@ -70,6 +71,13 @@ class Profile : Model {
             self.remoteThumbURL = URL(string: "asset://jplt_profile_thumb")
         }
 
+        if let subscriptions = data["subscriptions"] as? [String] {
+            self.subscriptions = subscriptions
+        }
+        else {  // TODO Remove me after alpha period
+            self.subscriptions = ["prealpha"]
+        }
+        
         self.setBindings()
     }
     
@@ -99,36 +107,8 @@ class Profile : Model {
         }
     }
     
-    func createRemotePath(_ filename:String) -> String {
+    override func createRemotePath(_ filename:String) -> String {
         return "profiles/\(uid!)/\(filename)"
-    }
-    
-    func upload(filename:String, data:Data, completion: @escaping ((URL)->Void)) {
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
-        let fileRef = storageRef.child(self.createRemotePath(filename))
-
-        print("Uploading \(filename)..")
-     
-        fileRef.putData(data, metadata: nil) { metadata, error in
-            guard let metadata = metadata else {
-                print("Error occured while uploading file: \(error!)")
-                return
-            }
-            // Metadata contains file metadata such as size, content-type.
-            let size = metadata.size
-            print("Uploaded " + String(size) + " bytes")
-            
-            fileRef.downloadURL { url, err in
-                if err != nil {
-                    print("Error while getting download URL \(err!)")
-                }
-                else {
-                    print("Download URL is \(url!)")
-                    completion(url!)
-                }
-            }
-        }
     }
     
     func uploadImage(_ image:UIImage) {

@@ -1,0 +1,47 @@
+service cloud.firestore {
+    	function isSubscriber(database, token) {        
+      	return (
+          request.auth != null &&
+          get(/databases/$(database)/documents/podcasts/$(token)) != null &&
+          request.auth.uid in get(/databases/$(database)/documents/podcasts/$(token)).data["subscribers"]
+        );
+      }
+      
+      function isPodcastOwner(database, token) {
+      	return (
+        	request.auth != null &&
+          get(/databases/$(database)/documents/podcasts/$(token)) != null &&
+          request.auth.uid == get(/databases/$(database)/documents/podcasts/$(token)).data["owner"]
+        );
+      }
+
+      function isEpisodeOwner(database, token, episode) {
+      	return (
+        	request.auth != null &&
+          get(/databases/$(database)/documents/podcasts/$(token)/episodes/$(episode)) != null &&
+          request.auth.uid == get(/databases/$(database)/documents/podcasts/$(token)/episodes/$(episode)).data["owner"]
+        );
+      }
+
+      function isUser() {
+      	return request.auth != null;
+      }
+      
+  match /databases/{database}/documents {
+  	match /podcasts/{token} {
+      allow create: if isUser();
+      allow update, delete: if isPodcastOwner(database, token);
+    	allow read: if isSubscriber(database, token);
+    
+    	match /episodes/{episode} {
+      	allow read, create: if isSubscriber(database, token);
+        allow update, delete: if isEpisodeOwner(database, token, episode);
+      }
+    }
+    
+    match /profiles/{userId} {
+      allow read: if true;
+			allow create, update, delete: if request.auth.uid == userId;
+    }
+  }
+}

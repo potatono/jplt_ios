@@ -33,4 +33,11 @@ class Profiles {
         return self.lookup[uid]!
     }
 
+    static func get(_ uid:String) -> Profile {
+        return Profiles.instance().get(uid)
+    }
+    
+    static func me() -> Profile {
+        return Profiles.instance().get(Auth.auth().currentUser!.uid)
+    }
 }
