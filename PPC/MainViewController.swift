@@ -16,7 +16,7 @@ class MainViewController: UINavigationController {
 
     // MARK: Actions
     @IBAction func unwindAuth(unwindSegue: UIStoryboardSegue) {
-        
+        print("Unwind Auth")
     }
     
     // MARK: Overridden Methods

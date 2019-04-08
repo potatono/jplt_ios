@@ -129,7 +129,7 @@ class Episode : Model, CustomStringConvertible {
     }
     
     func createRemotePath(_ filename:String="sound.m4a") -> String {
-        return "podcasts/\(owner)/episodes/\(id)/\(filename)"
+        return "podcasts/\(owner!)/episodes/\(id)/\(filename)"
     }
 
     func getPlaybackURL() -> URL? {
