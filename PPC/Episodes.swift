@@ -35,7 +35,11 @@ class Episodes : Model {
     func listen() {
         let col = getCollection()
         
-        col.order(by: "createDate", descending: true).addSnapshotListener { (snap, err) in
+        if let listenerRegistration = listenerRegistration {
+            listenerRegistration.remove()
+        }
+        
+        listenerRegistration = col.order(by: "createDate", descending: true).addSnapshotListener { (snap, err) in
             if err != nil {
                 print("Error getting documents \(err!)")
             }
