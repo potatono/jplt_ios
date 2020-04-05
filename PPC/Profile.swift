@@ -11,6 +11,7 @@ import Foundation
 import Firebase
 import FirebaseAuth
 
+
 class Profile : Model {
     var listenerRegistration: ListenerRegistration?
     
@@ -18,14 +19,15 @@ class Profile : Model {
     var remoteImageURL: URL?
     var remoteThumbURL: URL?
     var username: String?
-    var subscriptions: [String]?
+    var subscriptions: [String]
 
     init(_ uid: String) {
         self.uid = uid
+        self.subscriptions = []
     }
     
     override init() {
-        
+        self.subscriptions = []
     }
     
     func getDocumentReference() -> DocumentReference {
@@ -40,7 +42,7 @@ class Profile : Model {
         }
     }
     
-    func listen() {
+    func listen(completion: ((Profile) -> Void)? = nil) {
         if uid != nil && listenerRegistration == nil {
             let docRef = getDocumentReference()
             listenerRegistration = docRef.addSnapshotListener { (snap, err) in
@@ -49,6 +51,8 @@ class Profile : Model {
                 }
                 else if let data = snap?.data() {
                     self.restore(data)
+                    
+                    completion?(self)
                 }
             }
         }
@@ -74,9 +78,6 @@ class Profile : Model {
         if let subscriptions = data["subscriptions"] as? [String] {
             self.subscriptions = subscriptions
         }
-        else {  // TODO Remove me after alpha period
-            self.subscriptions = ["prealpha"]
-        }
         
         self.setBindings()
     }
@@ -86,7 +87,8 @@ class Profile : Model {
         
         var doc: [String: Any] = [
             "uid": uid!,
-            "username": username as Any
+            "username": username as Any,
+            "subscriptions": subscriptions
         ]
         
         if remoteImageURL != nil {
@@ -148,6 +150,78 @@ class Profile : Model {
                     doesNotCompletion()
                 }
             }
+        }
+    }
+    
+    func joinPodcast(inviteURLString: String, completion: ((String)->Void)? = nil) {
+        if !inviteURLString.starts(with: "https://jplt.com/join/") { return }
+        guard let inviteURL = URL(string: inviteURLString) else { return}
+
+        let pid = Podcast.decodePid(fromInviteURL: inviteURL)
+        print("Joining podcast " + pid)
+
+        self.subscriptions.append(pid)
+        self.save()
+        
+        Messaging.messaging().subscribe(toTopic: pid)
+
+        var request = URLRequest(url: inviteURL)
+        request.httpMethod = "POST"
+        let postString = "uid=" + self.uid!
+        request.httpBody = postString.data(using: String.Encoding.utf8);
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                
+                // Check for Error
+                if let error = error {
+                    print("Error took place \(error)")
+                    return
+                }
+         
+                // Convert HTTP Response Data to a String
+                if let data = data, let dataString = String(data: data, encoding: .utf8) {
+                    print("Response data string:\n \(dataString)")
+                    completion?(pid)
+                }
+        }
+        task.resume()
+    }
+    
+    func leavePodcast(podcast: Podcast, completion: (()->Void)? = nil) {
+        print("Leaving podcast " + podcast.pid)
+
+        self.subscriptions.removeAll(where: { $0 == podcast.pid })
+        self.save()
+        
+        Messaging.messaging().unsubscribe(fromTopic: podcast.pid)
+
+        let leaveURL = URL(string: "https://jplt.com/leave/" + podcast.inviteURL!.lastPathComponent)
+        var request = URLRequest(url: leaveURL!)
+        request.httpMethod = "POST"
+        let postString = "uid=" + self.uid!
+        request.httpBody = postString.data(using: String.Encoding.utf8);
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+                
+                // Check for Error
+                if let error = error {
+                    print("Error took place \(error)")
+                    return
+                }
+         
+                // Convert HTTP Response Data to a String
+                if let data = data, let dataString = String(data: data, encoding: .utf8) {
+                    print("Response data string:\n \(dataString)")
+                    completion?()
+                }
+        }
+        task.resume()
+    }
+    
+    func ensureNotificationSubscriptions() {
+        print("Ensuring \(self.subscriptions.count) subscriptions for \(String(describing: self.uid))")
+        for pid in subscriptions {
+            let topic = "podcast.\(pid)"
+            print("Subscribing to \(topic)")
+            Messaging.messaging().subscribe(toTopic: topic)
         }
     }
 }

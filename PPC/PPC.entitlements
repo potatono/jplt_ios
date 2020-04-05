@@ -4,5 +4,12 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:personalpodcastapp.web.app</string>
+		<string>applinks:personalpodcastapp.firebaseapp.com</string>
+		<string>applinks:jplt.com</string>
+		<string>applinks:www.jplt.com</string>
+	</array>
 </dict>
 </plist>

@@ -70,4 +70,25 @@ class Episodes : Model {
         self.list = []
         self.listen()
     }
+    
+    static func changeToDefault(completion: ((String) -> Void)? = nil) {
+        if Auth.auth().currentUser != nil {
+            _ = Profiles.me() { (profile) in
+                if profile.subscriptions.count > 0 {
+                    Episodes.PID = profile.subscriptions[0]
+                }
+                else if let username = profile.username {
+                    let podcast = Podcast()
+                    podcast.name = username + "'s Podcast"
+                    
+                    podcast.save()
+                    profile.subscriptions.append(podcast.pid)
+                    profile.save()
+                    Episodes.PID = podcast.pid
+                }
+                
+                completion?(Episodes.PID)
+            }
+        }
+    }
 }

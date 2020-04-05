@@ -33,7 +33,7 @@ class EpisodeTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         if let episode = episode {
-
+            
             usernameLabel.text = "Username"
             coverImageView.image = UIImage(named: "cover_icon")
             profileImageView.image = UIImage(named: "jplt_profile_thumb")

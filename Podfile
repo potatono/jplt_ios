@@ -11,7 +11,9 @@ target 'PPC' do
   pod 'Firebase/Auth'
   pod 'Firebase/Messaging'
   pod 'Firebase/Firestore'
+  pod 'FirebaseFirestoreSwift'
   pod 'Kingfisher', '~> 5.0'
+  pod 'Toast-Swift', '~> 5.0.1'
 
   target 'PPCTests' do
     inherit! :search_paths

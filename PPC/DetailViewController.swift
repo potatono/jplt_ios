@@ -23,6 +23,7 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         case paused
     }
 
+    public var podcast:Podcast = Podcast()
     public var episode:Episode = Episode()
     
     private var _state:State = State.empty
@@ -113,11 +114,11 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     }
     
     @IBAction func didBeginEditingTitle(_ sender: Any) {
-        self.view.frame.origin.y = -128
+        //self.view.frame.origin.y = -128
     }
     
     @IBAction func didEndEditingTitle(_ sender: Any) {
-        self.view.frame.origin.y = 0
+        //self.view.frame.origin.y = 0
     }
     
     @IBAction func didEditTitle(_ sender: Any) {
@@ -152,13 +153,22 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         else {
             mediaButton.isEnabled = _editable
         }
-        
+
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name:UIResponder.keyboardWillShowNotification, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name:UIResponder.keyboardWillHideNotification, object: nil);
+    }
+    
+    @objc func keyboardWillShow(_ sender: Notification) {
+         self.view.frame.origin.y = -150 // Move view 150 points upward
+    }
+
+    @objc func keyboardWillHide(_ sender: Notification) {
+         self.view.frame.origin.y = 0 // Move view to original position
     }
     
     func layoutControls() {
         let screenSize = UIScreen.main.bounds
         let screenHeight = screenSize.height
-
         
         print("Resizing coverButton")
         let size = screenHeight / 2

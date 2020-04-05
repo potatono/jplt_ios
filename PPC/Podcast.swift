@@ -20,17 +20,24 @@ class Podcast : Model {
     var subscribers: [String]
     var remoteCoverURL: URL?
     var remoteThumbURL: URL?
+    var inviteURL: URL?
     
     override init() {
-        pid = "newpodcast"
+        //pid = "newpodcast"
+        pid = UUID.init().uuidString
         name = "New Podcast"
         owner = Auth.auth().currentUser!.uid
         subscribers = [owner!]
+        super.init()
+
+        inviteURL = URL(string: "https://jplt.com/join/" + generateInviteCode(pid: pid))
     }
     
     init(_ pid:String) {
         self.pid = pid
         self.subscribers = []
+        super.init()
+        inviteURL = URL(string: "https://jplt.com/join/" + generateInviteCode(pid: pid))
     }
     
     func restore(_ data: [String: Any]) {
@@ -44,6 +51,10 @@ class Podcast : Model {
         
         if let remoteThumbURL = data["remoteThumbURL"] as? String {
             self.remoteThumbURL = URL(string: remoteThumbURL)
+        }
+        
+        if let inviteURL = data["inviteURL"] as? String {
+            self.inviteURL = URL(string: inviteURL)
         }
         
         self.setBindings()
@@ -63,11 +74,15 @@ class Podcast : Model {
         }
 
         if let remoteCoverURL = self.remoteCoverURL {
-            data["removeCoverURL"] = remoteCoverURL
+            data["remoteCoverURL"] = remoteCoverURL.absoluteString
         }
         
         if let remoteThumbURL = self.remoteThumbURL {
-            data["remoteThumbURL"] = remoteThumbURL
+            data["remoteThumbURL"] = remoteThumbURL.absoluteString
+        }
+        
+        if let inviteURL = self.inviteURL {
+            data["inviteURL"] = inviteURL.absoluteString
         }
         
         return data
@@ -110,11 +125,18 @@ class Podcast : Model {
             else if self.listenerRegistration == nil {
                 self.listen()
             }
+            
+            print("Writing subscribers collection")
+            for pid in data["subscribers"] as! [String] {
+                docRef.collection("subscribers").addDocument(data: [pid : []])
+            }
+            
+            print("Done")
         }
     }
     
     override func createRemotePath(_ filename:String) -> String {
-        return "podcasts/\(String(describing: owner))/\(pid)/\(filename)"
+        return "podcasts/\(String(describing: owner!))/\(pid)/\(filename)"
     }
 
     func uploadCover(_ cover:UIImage) {
@@ -142,4 +164,33 @@ class Podcast : Model {
         }
     }
     
+    func generateInviteCode(pid: String) -> String {
+        guard let tempUuid = NSUUID(uuidString: pid) else {
+            return pid
+        }
+        var tempUuidBytes: [UInt8] = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+        tempUuid.getBytes(&tempUuidBytes)
+        let data = Data(bytes: &tempUuidBytes, count: 16)
+        let base64 = data.base64EncodedString(options: NSData.Base64EncodingOptions())
+        return base64.replacingOccurrences(of: "=", with: "")
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+    }
+    
+    static func decodePid(fromInviteURL: URL)  -> String {
+        if fromInviteURL.lastPathComponent.count == 22 {
+            let base64 = fromInviteURL.lastPathComponent
+                .replacingOccurrences(of: "-", with: "+")
+                .replacingOccurrences(of: "_", with: "/")
+                .appendingFormat("==")
+
+            let data = Data(base64Encoded: base64)
+            let uuidBytes = data?.withUnsafeBytes { $0.baseAddress?.assumingMemoryBound(to: UInt8.self) }
+            let tempUuid = NSUUID(uuidBytes: uuidBytes)
+            return tempUuid.uuidString
+        }
+        else {
+            return fromInviteURL.lastPathComponent
+        }
+    }
 }

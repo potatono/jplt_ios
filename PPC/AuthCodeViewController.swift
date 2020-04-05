@@ -24,15 +24,18 @@ class AuthCodeViewController: UIViewController {
         let credential = PhoneAuthProvider.provider().credential(withVerificationID: verificationID,
                                                                  verificationCode: verificationCode)
 
-        Auth.auth().signInAndRetrieveData(with: credential) { authData, error in
+        Auth.auth().signIn(with: credential) { authData, error in
             if ((error) != nil) {
                 // Handles error
                 print(error!)
                 return
             }
             
+            
+            
             print("Unwinding...")
-            self.performSegue(withIdentifier: "unwindAuthSegue", sender: self)
+            //self.performSegue(withIdentifier: "unwindAuthSegue", sender: self)
+            self.performSegue(withIdentifier: "newProfileSegue", sender: self)
         };
     }
 }

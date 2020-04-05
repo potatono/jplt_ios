@@ -14,6 +14,7 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
     // MARK: Properties
     var episodes = Episodes()
     var podcast = Podcast(Episodes.PID)
+    var titleView = UILabel()
     
     // MARK: Actions
     @IBAction func unwindDetail(unwindSegue: UIStoryboardSegue) {
@@ -21,81 +22,57 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
 
         self.tableView.reloadData()
     }
-    
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem        
-        episodes.addBinding(forTopic: "reload", control: self.tableView)        
-        episodes.listen()
-        
-        podcast.addBinding(forTopic: "name", control: self)
-        podcast.listen()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        if let uid = Auth.auth().currentUser?.uid {
-            Profile(uid).ensureExists {
-                self.performSegue(withIdentifier: "profileSegue", sender: nil)
-            }
-        }
-        
-        episodes.addBinding(forTopic: "reload", control: self.tableView)
-        episodes.listen()
-
-        // self.navigationController!.setToolbarHidden(false, animated: false)
-        tableView.reloadData()
-
-        Profiles.me().ensureExists {
-            self.performSegue(withIdentifier: "profileSegue", sender: nil)
-        }
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        episodes.removeBinding(self.tableView)
-    }
-
-    func podcastChangedTo(pid: String) {
-        self.episodes.changePid(pid: pid)
-        
-        podcast = Podcast(pid)
-        podcast.addBinding(forTopic: "name", control: self)
-        podcast.listen()
-    }
-    
+  
     @IBAction func didPressMore(_ sender: Any) {
-        let alertController = UIAlertController(title: "Show", message: nil, preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: "Podcast", message: nil, preferredStyle: .actionSheet)
 
+        let joinButton = UIAlertAction(title: "Join Podcast", style: .default, handler: { (action) -> Void in
+            let alert = UIAlertController(title: "Join Podcast", message: "Invite URL", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Join", style: UIAlertAction.Style.default, handler: { _ in
+                self.joinPodcast(alert.textFields![0].text!)
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
+            alert.addTextField(configurationHandler: {(textField: UITextField!) in
+                textField.placeholder = "Invite URL"
+                textField.isSecureTextEntry = false
+            })
+            self.present(alert, animated: true, completion: nil)
+        })
+        alertController.addAction(joinButton)
+        
         let profileButton = UIAlertAction(title: "Edit Profile", style: .default, handler: { (action) -> Void in
             self.performSegue(withIdentifier: "profileSegue", sender: sender)
         })
         alertController.addAction(profileButton)
-
-//        if Episodes.PID == "prealpha" {
-//            let testingButton = UIAlertAction(title: "Switch to Testing Podcast", style: .default) { _ in
-//                self.episodes.changePid(pid: "testing")
-//            }
-//            alertController.addAction(testingButton)
-//        }
-//        else {
-//            let testingButton = UIAlertAction(title: "Switch to Alpha Podcast", style: .default) { _ in
-//                self.episodes.changePid(pid: "prealpha")
-//            }
-//            alertController.addAction(testingButton)
-//        }
-
+        
+        if podcast.owner == Auth.auth().currentUser!.uid {
+            let podcastDetailButton = UIAlertAction(title: "Edit Podcast", style: .default, handler: { (action) -> Void in
+                self.performSegue(withIdentifier: "podcastDetailSegue", sender: sender)
+            })
+            alertController.addAction(podcastDetailButton)
+            
+            let subscribersButton = UIAlertAction(title: "Subscribers", style: .default, handler: { (action) -> Void in
+                self.performSegue(withIdentifier: "subscribersSegue", sender: sender)
+            })
+            alertController.addAction(subscribersButton)
+        }
+        else {
+            let leaveButton = UIAlertAction(title: "Leave Podcast", style: .default, handler: { (action) -> Void in
+                let alert = UIAlertController(title: "Leave Podcast", message: "Are you sure?", preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(UIAlertAction(title: "Leave", style: UIAlertAction.Style.default, handler: { _ in
+                    self.leavePodcast()
+                }))
+                alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+            })
+            alertController.addAction(leaveButton)
+        }
+            
         let logoutButton = UIAlertAction(title: "Logout", style: .default) { _ in
             do {
                 try Auth.auth().signOut()
                 self.performSegue(withIdentifier: "authPhoneSegue", sender: self)
-
+                
             }
             catch _ { print("Sign Out Failed.") }
         }
@@ -104,13 +81,60 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
         })
         alertController.addAction(cancelButton)
-
+        
         
         self.navigationController!.present(alertController, animated: true, completion: nil)
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        Profiles.me() { profile in
+            profile.ensureNotificationSubscriptions()
+
+            Episodes.changeToDefault() { (pid) in
+                self.podcastChangedTo(pid: pid)
+            }
+        }
+
+        // Uncomment the following line to preserve selection between presentations
+        // self.clearsSelectionOnViewWillAppear = false
+
+        self.titleView.text = "Podcast"
+        self.titleView.textColor = .white
+        self.titleView.textAlignment = .center
+        self.titleView.font = UIFont(name: "HelveticaNeue-Medium", size: 17)
+        self.navigationController!.navigationBar.topItem!.titleView = self.titleView
+        
+        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+        // self.navigationItem.rightBarButtonItem = self.editButtonItem        
+        episodes.addBinding(forTopic: "reload", control: self.tableView)        
+        episodes.listen()
+        
+        podcast.addBinding(forTopic: "name", control: self.titleView, options: ["resize": true])
+        podcast.addBinding(forTopic: "name", control: self)
+        podcast.listen()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    
+        episodes.addBinding(forTopic: "reload", control: self.tableView)
+        episodes.listen()
+
+        tableView.reloadData()
+        self.navigationController?.setToolbarHidden(false, animated: false)
+
+        //self.navigationController!.navigationBar.topItem!.titleView = self.titleView
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        episodes.removeBinding(self.tableView)
+        self.navigationController!.navigationBar.topItem!.titleView = nil
+    }
+
+   
     // MARK: - Table view data source
-    
-    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -119,7 +143,6 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         return episodes.list.count
     }
 
-    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellIdentifier = "EpisodeTableViewCell"
         guard let cell = self.tableView.dequeueReusableCell(withIdentifier: cellIdentifier,
@@ -139,42 +162,6 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         return cell
     }
     
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
     
     // MARK: - Navigation
 
@@ -186,10 +173,51 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
             if let selectedEpisode = sender as? EpisodeTableViewCell {
                 let indexPath = tableView.indexPath(for: selectedEpisode)
                 detailViewController.episode = episodes.list[indexPath!.row]
+                detailViewController.podcast = podcast
             }
         }
         else if let podcastViewController = segue.destination as? PodcastsCollectionViewController {
             podcastViewController.changeDelegate = self
+        }
+    }
+    
+    // MARK: - Methods
+    func podcastChangedTo(pid: String) {
+        self.episodes.changePid(pid: pid)
+        
+        //podcast.removeBinding(self)
+        podcast.removeBinding(self.titleView)
+        podcast = Podcast(pid)
+        podcast.addBinding(forTopic: "name", control: self)
+        podcast.addBinding(forTopic: "name", control: self.titleView, options:["resize": true])
+        podcast.listen()
+    }
+    
+    func joinPodcast(_ inviteURLString: String) {
+        print("Joining podcast " + inviteURLString)
+        self.view.makeToastActivity(.center)
+        
+        Profiles.me().joinPodcast(inviteURLString: inviteURLString) { pid in
+            self.podcastChangedTo(pid: pid)
+            
+            DispatchQueue.main.sync {
+                self.view.hideAllToasts(includeActivity: true, clearQueue: true)
+            }
+        }
+    }
+    
+    func leavePodcast() {
+        print("Leaving podcast")
+        self.view.makeToastActivity(.center)
+
+        Profiles.me().leavePodcast(podcast: podcast) {
+            Episodes.changeToDefault() { (pid) in
+                self.podcastChangedTo(pid: pid)
+                
+                DispatchQueue.main.sync {
+                    self.view.hideAllToasts(includeActivity: true, clearQueue: true)
+                }
+            }
         }
     }
 }

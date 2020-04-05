@@ -40,7 +40,7 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
     
     override func viewDidLoad() {
         profile.addBinding(forTopic: "username", control: self.usernameTextField)
-        profile.addBinding(forTopic: "remoteImageURL", control: self.imageButton)
+        profile.addBinding(forTopic: "remoteImageURL", control: self.imageButton, options: ["noCrop": true])
         profile.listen()
         
 //        profile.read() { (_) in
@@ -53,6 +53,16 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
 //                                        for: UIControl.State.normal)
 //            }
 //        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name:UIResponder.keyboardWillShowNotification, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name:UIResponder.keyboardWillHideNotification, object: nil);
+    }
+    @objc func keyboardWillShow(_ sender: Notification) {
+         self.view.frame.origin.y = -150 // Move view 150 points upward
+    }
+
+    @objc func keyboardWillHide(_ sender: Notification) {
+         self.view.frame.origin.y = 0 // Move view to original position
     }
     
     func ensurePhotoPermission() {

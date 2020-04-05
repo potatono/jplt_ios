@@ -16,23 +16,20 @@ extension Date {
         let interval = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: self, to: Date())
         
         if let year = interval.year, year > 0 {
-            return year == 1 ? "\(year)" + " " + "year" :
+            return year == 1 ? "a year ago" :
                 "\(year)" + " " + "years ago"
         } else if let month = interval.month, month > 0 {
-            return month == 1 ? "\(month)" + " " + "month" :
+            return month == 1 ? "a month ago" :
                 "\(month)" + " " + "months ago"
         } else if let day = interval.day, day > 0 {
             return day == 1 ? "Yesterday" :
                 "\(day)" + " " + "days ago"
         } else if let hour = interval.hour, hour > 0 {
-            return hour == 1 ? "\(hour)" + " " + "hour" :
+            return hour == 1 ? "an hour ago" :
                 "\(hour)" + " " + "hours ago"
         } else if let minute = interval.minute, minute > 0 {
-            return minute == 1 ? "\(minute)" + " " + "minute" :
+            return minute == 1 ? "a moment ago" :
                 "\(minute)" + " " + "minutes ago"
-        } else if let second = interval.second, second > 0 {
-            return second == 1 ? "\(second)" + " " + "second" :
-                "\(second)" + " " + "seconds ago"
         } else {
             return "a moment ago"
         }
@@ -42,10 +39,12 @@ extension Date {
 class ControlBinding {
     var control: NSObject
     var setter: ((NSObject, Any?) -> Void)?
+    var options: [String: Any]
     
-    init(_ control: NSObject, setter: ((NSObject, Any?) -> Void)?) {
+    init(_ control: NSObject, setter: ((NSObject, Any?) -> Void)?, options: [String: Any]? = nil) {
         self.control = control
         self.setter = setter
+        self.options = options ?? [String: Any]()
     }
     
     func set(_ value: Any?) {
@@ -62,6 +61,10 @@ class ControlBinding {
                 let value = value as? String
         {
             control.text = value
+            
+            if self.options["resize"] != nil {
+                control.sizeToFit()
+            }
         }
         else if let control = self.control as? UILabel,
                 let value = value as? Date
@@ -81,24 +84,40 @@ class ControlBinding {
         else if let control = self.control as? UIButton,
                 let value = value as? URL
         {
-            if value.scheme == "asset" {
+            if self.options["asText"] != nil {
+                control.setTitle(value.absoluteString, for: UIControl.State.normal)
+                control.setTitle(value.absoluteString, for: UIControl.State.disabled)
+            }
+            else if value.scheme == "asset" {
                 control.setImage(UIImage(named: value.host!), for: UIControl.State.normal)
                 control.setImage(UIImage(named: value.host!), for: UIControl.State.disabled)
             }
-            else {
+            else if self.options["crop"] != nil {
                 let processor = CroppingImageProcessor(size: control.frame.size)
                 
                 control.kf.setImage(with: value, for: UIControl.State.normal, options: [ .processor(processor) ])
                 control.kf.setImage(with: value, for: UIControl.State.disabled, options: [ .processor(processor) ])
             }
+            else {
+                control.kf.setImage(with: value, for: UIControl.State.normal)
+                control.kf.setImage(with: value, for: UIControl.State.disabled)
+            }
         }
         else if let control = self.control as? UITableView {
+            print("Reload")
             control.reloadData()
         }
         else if let control = self.control as? UIViewController,
                 let value = value as? String
         {
             control.title = value
+        }
+        else if var control = self.control as? [String],
+                let value = value as? [String]
+        {
+            control.removeAll()
+            control.append(contentsOf: value)
+            print(control)
         }
     }
 }
@@ -121,15 +140,15 @@ class ControlBindings {
         controls[binding.control] = (forTopic, binding)
     }
     
-    func addBinding(forTopic:String, control:NSObject, setter:((NSObject, Any)-> Void)?) {
-        let binding = ControlBinding(control, setter: setter)
+    func addBinding(forTopic:String, control:NSObject, setter:((NSObject, Any)-> Void)? = nil, options:[String: Any]? = nil) {
+        let binding = ControlBinding(control, setter: setter, options: options)
         addBinding(forTopic: forTopic, binding: binding)
     }
     
-    func addBinding(forTopic:String, control: NSObject) {
-        addBinding(forTopic:forTopic, control:control, setter:nil)
-    }
-    
+//    func addBinding(forTopic:String, control: NSObject) {
+//        addBinding(forTopic:forTopic, control:control, setter:nil, options:nil)
+//    }
+//
     func removeBinding(_ control: NSObject) {
         if let (forTopic, binding) = controls[control] {
             bindings[forTopic]!.removeAll(where: { $0 === binding })

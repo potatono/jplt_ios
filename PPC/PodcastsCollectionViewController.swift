@@ -18,12 +18,12 @@ class PodcastsCollectionViewController : UICollectionViewController {
     var podcasts: [Podcast] = []
     
     override func viewDidLoad() {
-        if let subs = Profiles.me().subscriptions {
-            for sub in subs {
-                let podcast = Podcast(sub)
-                podcast.listen()
-                podcasts.append(podcast)
-            }
+        let subs = Profiles.me().subscriptions
+        
+        for sub in subs {
+            let podcast = Podcast(sub)
+            podcast.listen()
+            podcasts.append(podcast)
         }
     }
     
@@ -32,7 +32,7 @@ class PodcastsCollectionViewController : UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return podcasts.count
+        return podcasts.count + 1
     }
 
     override func collectionView(_ collectionView: UICollectionView,
@@ -45,17 +45,33 @@ class PodcastsCollectionViewController : UICollectionViewController {
             fatalError("The dequeued cell is not an instance of PodcastsCollectionViewCell")
         }
 
-        let podcast = podcasts[indexPath.row]
-        cell.podcast = podcast
-        podcast.addBinding(forTopic: "remoteThumbURL", control: cell.coverImageView)
-        podcast.addBinding(forTopic: "name", control: cell.nameLabel)
+        if indexPath.row < podcasts.count {
+            let podcast = podcasts[indexPath.row]
+            cell.podcast = podcast
+            podcast.addBinding(forTopic: "remoteCoverURL", control: cell.coverImageView)
+            podcast.addBinding(forTopic: "name", control: cell.nameLabel)
+        }
+        else {
+            cell.coverImageView.image = UIImage(named:"newpodcast")
+        }
         
         return cell
     }
     
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         if let changeDelegate = self.changeDelegate {
+            
+            if indexPath.row >= podcasts.count {
+                print("Creating new podcast")
+                let podcast = Podcast()
+                podcast.save()
+                podcasts.append(podcast)
+                Profiles.me().subscriptions.append(podcast.pid)
+                Profiles.me().save()
+            }
+
             let pid = podcasts[indexPath.row].pid
+
             print("Changing podcast to \(pid)")
             changeDelegate.podcastChangedTo(pid: pid)
             self.navigationController?.popViewController(animated: true)
