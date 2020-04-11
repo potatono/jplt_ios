@@ -27,7 +27,7 @@ class Profiles {
     func get(_ uid:String, completion: ((Profile) -> Void)? = nil) -> Profile {
         if self.lookup[uid] == nil {
             self.lookup[uid] = Profile(uid)
-            self.lookup[uid]!.listen(completion: completion)
+            self.lookup[uid]!.get(completion: completion)
         }
         else {
             completion?(self.lookup[uid]!)
@@ -40,8 +40,12 @@ class Profiles {
         return Profiles.instance().get(uid)
     }
     
-    static func me(completion: ((Profile) -> Void)? = nil) -> Profile {
-        return Profiles.instance().get(Auth.auth().currentUser!.uid, completion: completion)
+    static func me() -> Profile {
+        return Profiles.instance().get(Auth.auth().currentUser!.uid, completion: nil)
+    }
+    
+    static func me(completion: ((Profile) -> Void)?) -> Void {
+        _ = Profiles.instance().get(Auth.auth().currentUser!.uid, completion: completion)
     }
     
     

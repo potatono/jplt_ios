@@ -115,15 +115,23 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     
     @IBAction func didBeginEditingTitle(_ sender: Any) {
         //self.view.frame.origin.y = -128
+        titleTextField.borderStyle = .roundedRect
     }
     
     @IBAction func didEndEditingTitle(_ sender: Any) {
         //self.view.frame.origin.y = 0
+        titleTextField.borderStyle = .none
+
     }
     
     @IBAction func didEditTitle(_ sender: Any) {
-        episode.title = titleTextField.text ?? "New Episode"
-        episode.save()
+        if titleTextField.text != nil && titleTextField.text!.count > 0 {
+            episode.title = titleTextField.text!
+            episode.save()
+        }
+        else {
+            titleTextField.text = episode.title
+        }
     }
     
     @IBAction func doneEditingTitle(_ sender: Any) {
@@ -133,6 +141,7 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("View did load")
         layoutControls()
 
         episode.addBinding(forTopic: "title", control: titleTextField)
@@ -185,6 +194,12 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         episode.removeBinding(dateLabel)
         episode.profile.removeBinding(usernameLabel)
         episode.profile.removeBinding(profileImageView)
+        
+        if (!self.navigationController!.viewControllers.contains(self) &&
+            episode.shouldSendNotifications())
+        {
+            Notifications.send(episode:episode, podcast:podcast)
+        }
     }
     
     // MARK: Methods
@@ -228,8 +243,12 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
                     print("Photo access was denied or restricted")
                 case .notDetermined:
                     print("Photo access still not determined")
+                @unknown default:
+                    print("Unknown status \(status)")
                 }
             }
+        @unknown default:
+            print("Unknown status \(status)")
         }
     }
     
@@ -272,14 +291,14 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         do {
             try _recordingSession.setCategory(.playAndRecord, mode: .default)
             try _recordingSession.setActive(true)
-            _recordingSession.requestRecordPermission() { [unowned self] allowed in
+            _recordingSession.requestRecordPermission() { _ in /*[unowned self] allowed in
                 DispatchQueue.main.async {
                     if allowed {
                         // Success
                     } else {
                         // failed to record!
                     }
-                }
+                }*/
             }
             
             try _audioRecorder = AVAudioRecorder(url: episode.localURL,

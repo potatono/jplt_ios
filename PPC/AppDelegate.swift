@@ -13,7 +13,7 @@ import Firebase
 import FirebaseMessaging
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate, UISceneDelegate {
 
     var window: UIWindow?
     let gcmMessageIDKey = "gcm.message_id"
@@ -47,6 +47,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
 
+    
     // [START receive_message]
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
       // If you are receiving a notification message while your app is in the background,
@@ -61,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
       // Print full message.
       print(userInfo)
+      self.process(message: userInfo)
     }
 
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any],
@@ -77,6 +79,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
       // Print full message.
       print(userInfo)
+      self.process(message: userInfo)
 
       completionHandler(UIBackgroundFetchResult.newData)
     }
@@ -97,8 +100,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Print full message.
         print(userInfo)
+        self.process(message: userInfo)
         
-        Episodes.PID = userInfo["pid"] as! String
         // Change this to your preferred presentation option
         completionHandler([])
     }
@@ -114,10 +117,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // Print full message.
         print(userInfo)
+        self.process(message: userInfo)
         
         completionHandler()
     }
+
+    func process(message: [AnyHashable: Any]) {
+        let pid = message["pid"] as! String
+        print("New episode noticication in \(pid)")
+        
+        self.podcastChangedTo(pid: pid)
+    }
     
+    func getEpisodeTableViewController() -> EpisodeTableViewController? {
+        if self.window != nil && self.window!.rootViewController != nil {
+            for controller in self.window!.rootViewController!.children {
+                if let episodeTableViewController = controller as? EpisodeTableViewController {
+                    return episodeTableViewController
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func podcastChangedTo(pid: String) {
+        Episodes.PID = pid
+        self.getEpisodeTableViewController()?.podcastChangedTo(pid: pid)
+    }
+    
+    func joinPodcast(url: URL) {
+        self.getEpisodeTableViewController()?.joinPodcast(url.absoluteString)
+    }
     
     // [START refresh_token]
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
@@ -125,6 +156,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         let dataDict:[String: String] = ["token": fcmToken]
         NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
+        
+        
         // TODO: If necessary send token to application server.
         // Note: This callback is fired at each app startup and whenever a new token is generated.
     }
@@ -159,6 +192,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    @available(iOS 13.0, *)
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+            let urlToOpen = userActivity.webpageURL else {
+                return
+        }
+        
+        print("[URL] SceneDelegate called with url \(urlToOpen)")
+        self.joinPodcast(url: urlToOpen)
+    }
+    
+    internal func application(_ app: UIApplication, open url: URL,
+                             options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
 
+        print("[URL] Application opened with url \(url)")
+        self.joinPodcast(url: url)
+        return true
+    }
+
+    internal func application(_ application: UIApplication,
+                     continue userActivity: NSUserActivity,
+                     restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        // Get URL components from the incoming user activity
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+            let incomingURL = userActivity.webpageURL else { return false }
+            
+
+        print("[URL] Restored with url \(incomingURL)")
+        self.joinPodcast(url: incomingURL)
+        return true
+    }
 }
 

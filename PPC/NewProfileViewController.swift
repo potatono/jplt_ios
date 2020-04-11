@@ -20,6 +20,7 @@ class NewProfileViewController: ProfileViewController {
     
     @IBAction func didPressDone(_ sender: Any) {
         if let delegate = NewProfileViewController.podcastChangedDelegate {
+            print("New Profile Podcast Changed To Default")
             Episodes.changeToDefault() { (pid) in
                 delegate.podcastChangedTo(pid: pid)
             }

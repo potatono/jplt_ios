@@ -27,6 +27,7 @@ class Episode : Model, CustomStringConvertible {
     var remoteThumbURL: URL?
     var createDate: Date
     var profile: Profile
+    var notified: Bool
     
     public var description: String { return "\(id) \(title)" }
     
@@ -37,6 +38,7 @@ class Episode : Model, CustomStringConvertible {
         self.localURL = Episode.createLocalURL(self.id)
         self.createDate = Date()
         self.profile = Profile()
+        self.notified = false
     }
     
     override init() {
@@ -46,6 +48,7 @@ class Episode : Model, CustomStringConvertible {
         self.createDate = Date()
         self.owner = Auth.auth().currentUser!.uid
         self.profile = Profiles.instance().get(self.owner!)
+        self.notified = false
     }
     
     deinit {
@@ -124,6 +127,10 @@ class Episode : Model, CustomStringConvertible {
             self.createDate = t.dateValue()
         }
         
+        if let notified = data["notified"] as? Bool {
+            self.notified = notified
+        }
+        
         self.setBindings()
         self.profile.setBindings()
     }
@@ -148,7 +155,8 @@ class Episode : Model, CustomStringConvertible {
             "title": title,
             "owner": owner!,
             "localURL": localURL.absoluteString,
-            "createDate": Timestamp(date:createDate)
+            "createDate": Timestamp(date:createDate),
+            "notified": notified
         ]
         
         if remoteURL != nil {
@@ -169,7 +177,7 @@ class Episode : Model, CustomStringConvertible {
             }
             else if self.listenerRegistration == nil {
                 self.listen()
-            }
+            }            
         }
     }
     
@@ -252,5 +260,14 @@ class Episode : Model, CustomStringConvertible {
                 })
             })
         }
+    }
+    
+    func shouldSendNotifications() -> Bool {
+        return (Auth.auth().currentUser?.uid == self.owner &&
+            !self.notified &&
+            self.title != "New Episode" &&
+            self.remoteURL != nil &&
+            self.remoteCoverURL != nil
+        )
     }
 }

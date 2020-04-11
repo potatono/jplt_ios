@@ -72,6 +72,7 @@ class Episodes : Model {
     }
     
     static func changeToDefault(completion: ((String) -> Void)? = nil) {
+        print("Episodes changeToDefault")
         if Auth.auth().currentUser != nil {
             _ = Profiles.me() { (profile) in
                 if profile.subscriptions.count > 0 {

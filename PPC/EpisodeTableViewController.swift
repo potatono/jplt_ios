@@ -39,18 +39,18 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
             self.present(alert, animated: true, completion: nil)
         })
         alertController.addAction(joinButton)
-        
+
         let profileButton = UIAlertAction(title: "Edit Profile", style: .default, handler: { (action) -> Void in
             self.performSegue(withIdentifier: "profileSegue", sender: sender)
         })
         alertController.addAction(profileButton)
-        
+
         if podcast.owner == Auth.auth().currentUser!.uid {
             let podcastDetailButton = UIAlertAction(title: "Edit Podcast", style: .default, handler: { (action) -> Void in
                 self.performSegue(withIdentifier: "podcastDetailSegue", sender: sender)
             })
             alertController.addAction(podcastDetailButton)
-            
+
             let subscribersButton = UIAlertAction(title: "Subscribers", style: .default, handler: { (action) -> Void in
                 self.performSegue(withIdentifier: "subscribersSegue", sender: sender)
             })
@@ -72,31 +72,23 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
             do {
                 try Auth.auth().signOut()
                 self.performSegue(withIdentifier: "authPhoneSegue", sender: self)
-                
+
             }
             catch _ { print("Sign Out Failed.") }
         }
         alertController.addAction(logoutButton)
-        
+
         let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
         })
         alertController.addAction(cancelButton)
-        
-        
+
         self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        Profiles.me() { profile in
-            profile.ensureNotificationSubscriptions()
-
-            Episodes.changeToDefault() { (pid) in
-                self.podcastChangedTo(pid: pid)
-            }
-        }
-
+        print("View Did Load")
+        self.podcastChangedToDefault()
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -111,21 +103,22 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         episodes.addBinding(forTopic: "reload", control: self.tableView)        
         episodes.listen()
         
-        podcast.addBinding(forTopic: "name", control: self.titleView, options: ["resize": true])
-        podcast.addBinding(forTopic: "name", control: self)
-        podcast.listen()
+        // Set by changedTo
+//        podcast.addBinding(forTopic: "name", control: self.titleView, options: ["resize": true])
+//        podcast.addBinding(forTopic: "name", control: self)
+//        podcast.listen()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-    
+        
         episodes.addBinding(forTopic: "reload", control: self.tableView)
         episodes.listen()
 
         tableView.reloadData()
         self.navigationController?.setToolbarHidden(false, animated: false)
 
-        //self.navigationController!.navigationBar.topItem!.titleView = self.titleView
+        self.navigationController!.navigationBar.topItem!.titleView = self.titleView
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -170,10 +163,11 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         super.prepare(for: segue, sender: sender)
         
         if let detailViewController = segue.destination as? DetailViewController {
+            detailViewController.podcast = podcast
+            
             if let selectedEpisode = sender as? EpisodeTableViewCell {
                 let indexPath = tableView.indexPath(for: selectedEpisode)
                 detailViewController.episode = episodes.list[indexPath!.row]
-                detailViewController.podcast = podcast
             }
         }
         else if let podcastViewController = segue.destination as? PodcastsCollectionViewController {
@@ -181,11 +175,20 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         }
     }
     
+    func podcastChangedToDefault() {
+        Profiles.me() { profile in
+            Episodes.changeToDefault() { (pid) in
+                self.podcastChangedTo(pid: pid)
+            }
+        }
+    }
+    
     // MARK: - Methods
     func podcastChangedTo(pid: String) {
+        print("podcastChangedTo \(pid)")
         self.episodes.changePid(pid: pid)
         
-        //podcast.removeBinding(self)
+        podcast.removeBinding(self)
         podcast.removeBinding(self.titleView)
         podcast = Podcast(pid)
         podcast.addBinding(forTopic: "name", control: self)

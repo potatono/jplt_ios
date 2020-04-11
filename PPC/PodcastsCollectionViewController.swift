@@ -27,6 +27,10 @@ class PodcastsCollectionViewController : UICollectionViewController {
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        Notifications.me().housekeeping()
+    }
+    
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -50,6 +54,14 @@ class PodcastsCollectionViewController : UICollectionViewController {
             cell.podcast = podcast
             podcast.addBinding(forTopic: "remoteCoverURL", control: cell.coverImageView)
             podcast.addBinding(forTopic: "name", control: cell.nameLabel)
+            guard let unread = Notifications.getInstance(uid: Profiles.me().uid!).unreads[podcast.pid]
+                else {
+                    cell.badgeLabel.isHidden = true
+                    return cell
+                }
+            
+            cell.badgeLabel.text = String(unread)
+            cell.badgeLabel.isHidden = unread <= 0
         }
         else {
             cell.coverImageView.image = UIImage(named:"newpodcast")
@@ -71,9 +83,8 @@ class PodcastsCollectionViewController : UICollectionViewController {
             }
 
             let pid = podcasts[indexPath.row].pid
-
-            print("Changing podcast to \(pid)")
             changeDelegate.podcastChangedTo(pid: pid)
+            Notifications.getInstance(uid:Profiles.me().uid!).clearUnread(pid: pid)
             self.navigationController?.popViewController(animated: true)
         }
 

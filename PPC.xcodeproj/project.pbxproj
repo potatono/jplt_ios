@@ -20,6 +20,9 @@
 		D02DC80C225CF91D00DC3352 /* PodcastSubscribersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02DC80B225CF91D00DC3352 /* PodcastSubscribersTableViewController.swift */; };
 		D02DC80E225D280D00DC3352 /* PodcastSubscribersViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02DC80D225D280D00DC3352 /* PodcastSubscribersViewCell.swift */; };
 		D052047724365A9300F2DC37 /* NewProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D052047624365A9300F2DC37 /* NewProfileViewController.swift */; };
+		D0520479243B9E3700F2DC37 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0520478243B9E3700F2DC37 /* Notifications.swift */; };
+		D052047B243C0C8300F2DC37 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = D052047A243C0C8300F2DC37 /* Util.swift */; };
+		D0682A11243F8EEC005A1AA6 /* Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0682A10243F8EEC005A1AA6 /* Badge.swift */; };
 		D0685DEE21921C1A0092E0FE /* UIVUMeter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0685DED21921C1A0092E0FE /* UIVUMeter.swift */; };
 		D0685DF02193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
 		D0685DF12193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
@@ -81,6 +84,9 @@
 		D02DC80B225CF91D00DC3352 /* PodcastSubscribersTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastSubscribersTableViewController.swift; sourceTree = "<group>"; };
 		D02DC80D225D280D00DC3352 /* PodcastSubscribersViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastSubscribersViewCell.swift; sourceTree = "<group>"; };
 		D052047624365A9300F2DC37 /* NewProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileViewController.swift; sourceTree = "<group>"; };
+		D0520478243B9E3700F2DC37 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
+		D052047A243C0C8300F2DC37 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		D0682A10243F8EEC005A1AA6 /* Badge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Badge.swift; sourceTree = "<group>"; };
 		D0685DED21921C1A0092E0FE /* UIVUMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIVUMeter.swift; sourceTree = "<group>"; };
 		D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D0947CB5219091A900394049 /* PPC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPC.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -203,6 +209,9 @@
 				D02DC80B225CF91D00DC3352 /* PodcastSubscribersTableViewController.swift */,
 				D02DC80D225D280D00DC3352 /* PodcastSubscribersViewCell.swift */,
 				D052047624365A9300F2DC37 /* NewProfileViewController.swift */,
+				D0520478243B9E3700F2DC37 /* Notifications.swift */,
+				D052047A243C0C8300F2DC37 /* Util.swift */,
+				D0682A10243F8EEC005A1AA6 /* Badge.swift */,
 			);
 			path = PPC;
 			sourceTree = "<group>";
@@ -307,6 +316,7 @@
 				TargetAttributes = {
 					D0947CB4219091A900394049 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1140;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -315,10 +325,12 @@
 					};
 					D0947CC8219091AB00394049 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1140;
 						TestTargetID = D0947CB4219091A900394049;
 					};
 					D0947CD3219091AC00394049 = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1140;
 						TestTargetID = D0947CB4219091A900394049;
 					};
 				};
@@ -464,6 +476,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0520479243B9E3700F2DC37 /* Notifications.swift in Sources */,
 				D003A7082217B64B00DCC2CD /* Model.swift in Sources */,
 				D003A70C222727AA00DCC2CD /* Podcast.swift in Sources */,
 				D0F5F40921C1B94300EB65CE /* EpisodeTableViewCell.swift in Sources */,
@@ -474,6 +487,7 @@
 				D014287621C59EE800D0A414 /* Episodes.swift in Sources */,
 				D003A7102228679300DCC2CD /* PodcastsCollectionViewController.swift in Sources */,
 				D003A7062217A1CF00DCC2CD /* ControlBinding.swift in Sources */,
+				D0682A11243F8EEC005A1AA6 /* Badge.swift in Sources */,
 				D02DC80A225CF90600DC3352 /* PodcastDetailViewController.swift in Sources */,
 				D0947CB9219091A900394049 /* AppDelegate.swift in Sources */,
 				D003A70A2225D93600DCC2CD /* SegueFromLeft.swift in Sources */,
@@ -485,6 +499,7 @@
 				D0F5F40D21C1BB0400EB65CE /* Episode.swift in Sources */,
 				D02DC80C225CF91D00DC3352 /* PodcastSubscribersTableViewController.swift in Sources */,
 				D0F5F40321BADB3100EB65CE /* AuthNumberViewController.swift in Sources */,
+				D052047B243C0C8300F2DC37 /* Util.swift in Sources */,
 				D0F5F40F21C1F7F400EB65CE /* MainViewController.swift in Sources */,
 				D0C2441E2216015B0058DEA9 /* Profiles.swift in Sources */,
 			);
@@ -672,7 +687,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jplt.PPC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -692,7 +707,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jplt.PPC;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -704,6 +719,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7R5CW3PY9D;
 				INFOPLIST_FILE = PPCTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -712,7 +728,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jplt.PPCTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PPC.app/PPC";
 			};
@@ -725,6 +741,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7R5CW3PY9D;
 				INFOPLIST_FILE = PPCTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -733,7 +750,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jplt.PPCTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PPC.app/PPC";
 			};
@@ -745,6 +762,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7R5CW3PY9D;
 				INFOPLIST_FILE = PPCUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -753,7 +771,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jplt.PPCUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = PPC;
 			};
@@ -765,6 +783,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7R5CW3PY9D;
 				INFOPLIST_FILE = PPCUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -773,7 +792,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jplt.PPCUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = PPC;
 			};

@@ -193,4 +193,9 @@ class Podcast : Model {
             return fromInviteURL.lastPathComponent
         }
     }
+    
+    func delete() {
+        let ref = self.getDocumentReference()
+        ref.delete()
+    }
 }

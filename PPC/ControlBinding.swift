@@ -104,7 +104,7 @@ class ControlBinding {
             }
         }
         else if let control = self.control as? UITableView {
-            print("Reload")
+            print("Reloading table view \(control)")
             control.reloadData()
         }
         else if let control = self.control as? UIViewController,
@@ -128,7 +128,7 @@ class ControlBindings {
     
     func addBinding(forTopic:String, binding: ControlBinding) {
         if controls[binding.control] != nil {
-            print("Control is already bound.")
+            //print("Control \(binding.control) is already bound.")
             return
         }
         

@@ -84,8 +84,12 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
                     print("Photo access was denied or restricted")
                 case .notDetermined:
                     print("Photo access still not determined")
+                @unknown default:
+                    print("Unknown status \(status)")
                 }
             }
+        @unknown default:
+            print("Unknown status \(status)")
         }
     }
     

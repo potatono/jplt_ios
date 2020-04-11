@@ -41,8 +41,24 @@ class Profile : Model {
             listenerRegistration.remove()
         }
     }
-    
-    func listen(completion: ((Profile) -> Void)? = nil) {
+
+    func get(completion: ((Profile) -> Void)? = nil) {
+        if uid != nil && listenerRegistration == nil {
+            let docRef = getDocumentReference()
+            docRef.getDocument() { (snap, err) in
+                if let err = err {
+                    print("Error in listener for \(self): \(err)")
+                }
+                else if let data = snap?.data() {
+                    self.restore(data)
+                    
+                    completion?(self)
+                }
+            }
+        }
+    }
+
+    func listen() {
         if uid != nil && listenerRegistration == nil {
             let docRef = getDocumentReference()
             listenerRegistration = docRef.addSnapshotListener { (snap, err) in
@@ -51,8 +67,6 @@ class Profile : Model {
                 }
                 else if let data = snap?.data() {
                     self.restore(data)
-                    
-                    completion?(self)
                 }
             }
         }
@@ -160,14 +174,17 @@ class Profile : Model {
         let pid = Podcast.decodePid(fromInviteURL: inviteURL)
         print("Joining podcast " + pid)
 
-        self.subscriptions.append(pid)
-        self.save()
+        if !self.subscriptions.contains(pid) {
+            self.subscriptions.append(pid)
+            self.save()
+        }
         
-        Messaging.messaging().subscribe(toTopic: pid)
+        //Messaging.messaging().subscribe(toTopic: pid)
 
         var request = URLRequest(url: inviteURL)
         request.httpMethod = "POST"
         let postString = "uid=" + self.uid!
+        print("HTTP POST to \(inviteURL) with \(postString)")
         request.httpBody = postString.data(using: String.Encoding.utf8);
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
                 
@@ -186,13 +203,16 @@ class Profile : Model {
         task.resume()
     }
     
+    func removeSubscription(podcast: Podcast) {
+        self.subscriptions.removeAll(where: { $0 == podcast.pid })
+        self.save()
+    }
+    
     func leavePodcast(podcast: Podcast, completion: (()->Void)? = nil) {
         print("Leaving podcast " + podcast.pid)
 
-        self.subscriptions.removeAll(where: { $0 == podcast.pid })
-        self.save()
-        
-        Messaging.messaging().unsubscribe(fromTopic: podcast.pid)
+        //Messaging.messaging().unsubscribe(fromTopic: podcast.pid)
+        self.removeSubscription(podcast: podcast)
 
         let leaveURL = URL(string: "https://jplt.com/leave/" + podcast.inviteURL!.lastPathComponent)
         var request = URLRequest(url: leaveURL!)
@@ -214,15 +234,6 @@ class Profile : Model {
                 }
         }
         task.resume()
-    }
-    
-    func ensureNotificationSubscriptions() {
-        print("Ensuring \(self.subscriptions.count) subscriptions for \(String(describing: self.uid))")
-        for pid in subscriptions {
-            let topic = "podcast.\(pid)"
-            print("Subscribing to \(topic)")
-            Messaging.messaging().subscribe(toTopic: topic)
-        }
     }
 }
 
