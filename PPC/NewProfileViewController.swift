@@ -17,12 +17,15 @@ class NewProfileViewController: ProfileViewController {
     // We get a reference to this before the first segue, we update podcast after we've finished
     // ensuring there's a profile and a first podcast.
     public static var podcastChangedDelegate : PodcastChangedDelegate?
-    
+        
     @IBAction func didPressDone(_ sender: Any) {
-        if let delegate = NewProfileViewController.podcastChangedDelegate {
-            print("New Profile Podcast Changed To Default")
-            Episodes.changeToDefault() { (pid) in
-                delegate.podcastChangedTo(pid: pid)
+        save() {
+            if let delegate = NewProfileViewController.podcastChangedDelegate {
+                print("New Profile Podcast Changed To Default")
+                
+                Episodes.changeToDefault() { (pid) in
+                    delegate.podcastChangedTo(pid: pid)
+                }
             }
         }
     }

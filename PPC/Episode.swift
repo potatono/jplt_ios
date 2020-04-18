@@ -28,6 +28,7 @@ class Episode : Model, CustomStringConvertible {
     var createDate: Date
     var profile: Profile
     var notified: Bool
+    var published: Bool
     
     public var description: String { return "\(id) \(title)" }
     
@@ -39,6 +40,7 @@ class Episode : Model, CustomStringConvertible {
         self.createDate = Date()
         self.profile = Profile()
         self.notified = false
+        self.published = false
     }
     
     override init() {
@@ -49,6 +51,7 @@ class Episode : Model, CustomStringConvertible {
         self.owner = Auth.auth().currentUser!.uid
         self.profile = Profiles.instance().get(self.owner!)
         self.notified = false
+        self.published = false
     }
     
     deinit {
@@ -130,7 +133,17 @@ class Episode : Model, CustomStringConvertible {
         if let notified = data["notified"] as? Bool {
             self.notified = notified
         }
-        
+        else if self.createDate < Date(timeIntervalSince1970: 1586963614) {
+            self.notified = true
+        }
+
+        if let published = data["published"] as? Bool {
+            self.published = published
+        }
+        else if self.createDate < Date(timeIntervalSince1970: 1586963614) {
+            self.published = true
+        }
+
         self.setBindings()
         self.profile.setBindings()
     }
@@ -149,27 +162,38 @@ class Episode : Model, CustomStringConvertible {
         return self.owner == Auth.auth().currentUser!.uid
     }
     
-    func save() {
+    func canView() -> Bool {
+        return self.published || self.canEdit()
+    }
+    
+    func getData() -> [String: Any] {
         var doc: [String: Any] = [
-            "id": id,
-            "title": title,
-            "owner": owner!,
-            "localURL": localURL.absoluteString,
-            "createDate": Timestamp(date:createDate),
-            "notified": notified
-        ]
-        
-        if remoteURL != nil {
-            doc["remoteURL"] = remoteURL!.absoluteString
-        }
-        
-        if remoteCoverURL != nil {
-            doc["remoteCoverURL"] = remoteCoverURL!.absoluteString
-        }
-        
-        if remoteThumbURL != nil {
-            doc["remoteThumbURL"] = remoteThumbURL!.absoluteString
-        }
+              "id": id,
+              "title": title,
+              "owner": owner!,
+              "localURL": localURL.absoluteString,
+              "createDate": Timestamp(date:createDate),
+              "notified": notified,
+              "published": published
+          ]
+          
+          if remoteURL != nil {
+              doc["remoteURL"] = remoteURL!.absoluteString
+          }
+          
+          if remoteCoverURL != nil {
+              doc["remoteCoverURL"] = remoteCoverURL!.absoluteString
+          }
+          
+          if remoteThumbURL != nil {
+              doc["remoteThumbURL"] = remoteThumbURL!.absoluteString
+          }
+          
+        return doc
+    }
+    
+    func save() {
+        let doc = self.getData()
         
         self.getDocumentReference().setData(doc) { err in
             if let err = err {
@@ -181,7 +205,7 @@ class Episode : Model, CustomStringConvertible {
         }
     }
     
-    func uploadRecording() {
+    func uploadRecording(completion: @escaping () -> Void) {
         let storage = Storage.storage()
         let storageRef = storage.reference()
         let fileRef = storageRef.child(self.createRemotePath())
@@ -205,40 +229,53 @@ class Episode : Model, CustomStringConvertible {
                 else {
                     self.remoteURL = url!
                     self.save()
+                    completion()
                 }
             }
         }
     }
-    
-    func uploadCover(_ cover:UIImage) {
-        if let data = cover.jpegData(compressionQuality: 0.8) {
-            print("Uploading cover..")
 
-            upload(filename: "cover.jpg",
-                   data: data,
-                   completion: { (url) in
-                     self.remoteCoverURL = url
-                     self.save()
-            })
+    func uploadImage(_ image:UIImage, as filename:String, size: CGSize? = nil, completion: @escaping (URL) -> Void) {
+        var resized: UIImage = image
+        
+        if let size = size {
+            resized = image.kf.resize(to: size)
         }
         
-        let thumb = cover.kf.resize(to: CGSize(width: 100, height: 100))
-        if let data = thumb.pngData() {
-            print("Uploading cover thumb..")
-            
-            self.upload(filename: "cover-thumb.png",
-                        data: data,
-                        completion: { (url) in
-                            self.remoteThumbURL = url
-                            self.save()
-            })
+        if let data = resized.jpegData(compressionQuality: 0.8) {
+            print("Uploading \(filename)..")
+
+            upload(filename: filename, data: data, completion: completion)
+        }
+    }
+    
+    func uploadCover(_ cover:UIImage, completion: @escaping () -> Void) {
+        var countDone = 0
+        
+        uploadImage(cover, as: "cover-original.jpg") { (url) in
+            countDone += 1
+            if countDone == 3 { completion() }
+        }
+        
+        uploadImage(cover, as: "cover.jpg", size: CGSize(width: 600, height: 600)) { (url) in
+            self.remoteCoverURL = url
+            self.save()
+            countDone += 1
+            if countDone == 3 { completion() }
+        }
+        
+        uploadImage(cover, as: "cover-thumb.jpg", size: CGSize(width: 100, height: 100)) { (url) in
+            self.remoteThumbURL = url
+            self.save()
+            countDone += 1
+            if countDone == 3 { completion() }
         }
     }
     
     func delete(completion: (() -> Void)? = nil) {
         let db = Firestore.firestore()
-        let storage = Storage.storage()
-        let storageRef = storage.reference()
+        //let storage = Storage.storage()
+        //let storageRef = storage.reference()
 
         let pid = Episodes.PID
         let col = db.collection("podcasts").document(pid).collection("episodes")
@@ -247,18 +284,22 @@ class Episode : Model, CustomStringConvertible {
         print("Deleting episode document..")
         
         doc.delete { (_: Error?) in
-            print("Deleting episode cover..")
-            let coverRef = storageRef.child(self.createRemotePath("cover.jpg"))
-
-            coverRef.delete(completion: { (_: Error?) in
-                print("Deleting episode audio..")
-                let episodeRef = storageRef.child(self.createRemotePath())
-
-                episodeRef.delete(completion: { (_: Error?) in
-                    print("Calling completion..")
-                    if completion != nil { completion!(); }
-                })
-            })
+            completion?()
+            
+            // TODO FIXME - Incrment counter on crosspost, deinc here, and delete on zero
+            
+//            print("Deleting episode cover..")
+//            let coverRef = storageRef.child(self.createRemotePath("cover.jpg"))
+//
+//            coverRef.delete(completion: { (_: Error?) in
+//                print("Deleting episode audio..")
+//                let episodeRef = storageRef.child(self.createRemotePath())
+//
+//                episodeRef.delete(completion: { (_: Error?) in
+//                    print("Calling completion..")
+//                    if completion != nil { completion!(); }
+//                })
+//            })
         }
     }
     
@@ -269,5 +310,51 @@ class Episode : Model, CustomStringConvertible {
             self.remoteURL != nil &&
             self.remoteCoverURL != nil
         )
+    }
+    
+    func publish(podcast: Podcast) {
+        print("Publishing to \(podcast.pid)")
+
+        self.published = true
+        
+        if self.shouldSendNotifications() {
+            self.notified = true
+            Notifications.send(episode: self, podcast: podcast)
+        }
+        
+        self.save()
+    }
+    
+    func crosspost(podcast: Podcast, completion: (() -> Void)? = nil) {
+        let db = Firestore.firestore()
+        let col = db.collection("podcasts").document(podcast.pid).collection("episodes")
+        let docRef = col.document(self.id)
+        
+        docRef.getDocument() { doc, err in
+            if err != nil {
+                print(err!)
+                completion?()
+            }
+            else if !doc!.exists {
+                docRef.setData(self.getData()) { _ in
+                    if self.shouldSendNotifications() {
+                        Notifications.send(episode: self, podcast: podcast)
+                        self.notified = true
+                        self.save()
+                    }
+                    
+                    completion?()
+                }
+            }
+            else {
+                if self.shouldSendNotifications() {
+                    Notifications.send(episode: self, podcast: podcast)
+                    self.notified = true
+                    self.save()
+                }
+                
+                completion?()
+            }
+        }
     }
 }

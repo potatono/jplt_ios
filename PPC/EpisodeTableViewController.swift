@@ -119,6 +119,8 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         self.navigationController?.setToolbarHidden(false, animated: false)
 
         self.navigationController!.navigationBar.topItem!.titleView = self.titleView
+        
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -143,7 +145,7 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         else {
             fatalError("The dequeued cell is not an instance of EpisodeTableViewCell")
         }
-        
+
         let episode = episodes.list[indexPath.row]
         cell.episode = episode
         episode.addBinding(forTopic: "title", control: cell.titleLabel)
@@ -200,11 +202,13 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         print("Joining podcast " + inviteURLString)
         self.view.makeToastActivity(.center)
         
-        Profiles.me().joinPodcast(inviteURLString: inviteURLString) { pid in
-            self.podcastChangedTo(pid: pid)
+        Profiles.me() { profile in
+            profile.joinPodcast(inviteURLString: inviteURLString) { pid in
+                self.podcastChangedTo(pid: pid)
             
-            DispatchQueue.main.sync {
-                self.view.hideAllToasts(includeActivity: true, clearQueue: true)
+                DispatchQueue.main.sync {
+                    self.view.hideAllToasts(includeActivity: true, clearQueue: true)
+                }
             }
         }
     }

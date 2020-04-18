@@ -11,12 +11,14 @@ import UIKit
 import Photos
 import Toast_Swift
 
-class PodcastDetailViewController : UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class PodcastDetailViewController : ImagePickerViewController {
     public var podcast:Podcast = Podcast(Episodes.PID)
 
     @IBOutlet weak var coverButton: UIButton!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var inviteButton: UIButton!
+    @IBOutlet weak var tapToChangeLabel: UILabel!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +29,10 @@ class PodcastDetailViewController : UIViewController, UINavigationControllerDele
         podcast.listen()
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name:UIResponder.keyboardWillShowNotification, object: nil);
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name:UIResponder.keyboardWillHideNotification, object: nil);
+        
+        tapToChangeLabel.layer.cornerRadius = 5
+        tapToChangeLabel.layer.masksToBounds = true
+        
     }
           
     @objc func keyboardWillShow(_ sender: Notification) {
@@ -38,12 +44,11 @@ class PodcastDetailViewController : UIViewController, UINavigationControllerDele
     }
     
     @IBAction func didEditName(_ sender: Any) {
-        podcast.name = nameTextField.text ?? "New Podcast"
-        podcast.save()
+        //podcast.name = nameTextField.text ?? "New Podcast"
     }
     
     @IBAction func didPressCover(_ sender: Any) {
-        choosePhoto()
+        presentImagePicker(from: sender)
     }
     
     @IBAction func didPressInvite(_ sender: Any) {
@@ -64,6 +69,22 @@ class PodcastDetailViewController : UIViewController, UINavigationControllerDele
         self.present(alert, animated: true, completion: nil)
     }
     
+    @IBAction func didPressSave(_ sender: Any) {
+        podcast.name = nameTextField.text ?? "New Podcast"
+
+        if let image = pickedImage {
+            self.view.makeToastActivity(.center)
+            podcast.uploadCover(image) {
+                self.view.hideToastActivity()
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
+        else {
+            podcast.save()
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
     func getEpisodeTableViewController() -> EpisodeTableViewController? {
         for controller in self.navigationController!.children {
             if let episodeTableViewController = controller as? EpisodeTableViewController {
@@ -73,62 +94,9 @@ class PodcastDetailViewController : UIViewController, UINavigationControllerDele
         
         return nil
     }
-    
-    // TODO Refactor - DRY from DetailViewController
-    func ensurePhotoPermission() {
-        let status = PHPhotoLibrary.authorizationStatus()
-        
-        switch status {
-        case .authorized:
-            print("Photo access is authorized")
-        case .denied, .restricted :
-            print("Photo access is denied or restricted")
-        case .notDetermined:
-            print("Asking for permissions to photos")
-            
-            PHPhotoLibrary.requestAuthorization { status in
-                switch status {
-                case .authorized:
-                    print("Photo access was granted")
-                case .denied, .restricted:
-                    print("Photo access was denied or restricted")
-                case .notDetermined:
-                    print("Photo access still not determined")
-                @unknown default:
-                    print("Unknown status \(status)")
-                }
-            }
-        @unknown default:
-            print("Unknown status \(status)")
-        }
+
+    override func didPickImage(image: UIImage) {
+        coverButton.setImage(image, for:UIControl.State.normal)
+        tapToChangeLabel.isHidden = true
     }
-    
-    func choosePhoto() {
-        ensurePhotoPermission()
-        
-        if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
-            print("Button capture")
-            
-            let imagePicker = UIImagePickerController()
-            imagePicker.delegate = (self as UIImagePickerControllerDelegate & UINavigationControllerDelegate)
-            //imagePicker.sourceType = .savedPhotosAlbum;
-            imagePicker.sourceType = .photoLibrary
-            imagePicker.allowsEditing = true
-            
-            self.present(imagePicker, animated: true, completion: nil)
-        }
-    }
-    
-    @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage!, editingInfo: [NSObject : AnyObject]!)
-    {
-        self.dismiss(animated: true, completion: { () -> Void in
-            print("Dismissed")
-        })
-        
-        print("Setting image")
-        //coverButton.setImage(image, for:UIControl.State.normal)
-        
-        podcast.uploadCover(image)
-    }
-    
 }

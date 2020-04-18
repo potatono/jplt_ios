@@ -13,15 +13,17 @@ import Photos
 import Kingfisher
 import FirebaseAuth
 
-class ProfileViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class ProfileViewController: ImagePickerViewController {
     
-    var profile: Profile = Profile(Auth.auth().currentUser!.uid)
+    var profile: Profile = Profiles.me()
 
     @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var usernameTextField: UITextField!
-
+    @IBOutlet weak var tapToChangeLabel: UILabel!
+    
     @IBAction func didTouchImage(_ sender: Any) {
-        choosePhoto()
+        presentImagePicker(from: sender)
+        tapToChangeLabel.isHidden = true
     }
     
     @IBAction func usernameEditingDidBegin(_ sender: Any) {
@@ -30,33 +32,59 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
 
     @IBAction func usernameEditingDidEnd(_ sender: Any) {
         self.view.frame.origin.y = 0
-        self.profile.username = usernameTextField.text
-        self.profile.save()
     }
     
     @IBAction func doneEditingUsername(_ sender: Any) {
         usernameTextField.resignFirstResponder()
     }
     
+    @IBAction func didPressSave(_ sender: Any) {
+        save() {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+
+    func save(completion: (()->Void)? = nil) {
+        self.profile.username = usernameTextField.text
+        
+        if let image = pickedImage {
+             // Upload saves
+            self.view.makeToastActivity(.center)
+            self.profile.uploadImage(image) {
+                self.view.hideToastActivity()
+                self.profile.setBindings() // Profiles use get instead of listen
+                completion?()
+            }
+        }
+        else {
+            self.profile.save()
+            self.profile.setBindings() // Profiles use get instead of listen
+            completion?()
+        }
+    }
+    
     override func viewDidLoad() {
-        profile.addBinding(forTopic: "username", control: self.usernameTextField)
-        profile.addBinding(forTopic: "remoteImageURL", control: self.imageButton, options: ["noCrop": true])
-        profile.listen()
-        
-//        profile.read() { (_) in
-//            if let username = self.profile.username {
-//                self.usernameTextField.text = username
-//            }
-//
-//            if let remoteImageURL = self.profile.remoteImageURL {
-//                self.imageButton.kf.setImage(with: remoteImageURL,
-//                                        for: UIControl.State.normal)
-//            }
-//        }
-        
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name:UIResponder.keyboardWillShowNotification, object: nil);
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name:UIResponder.keyboardWillHideNotification, object: nil);
+        
+        tapToChangeLabel.layer.cornerRadius = 5
+        tapToChangeLabel.layer.masksToBounds = true
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        profile.addBinding(forTopic: "username", control: self.usernameTextField)
+        profile.addBinding(forTopic: "remoteImageURL", control: self.imageButton, options: ["noCrop": true])
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        profile.removeBinding(self.usernameTextField)
+        profile.removeBinding(self.imageButton)
+    }
+    
     @objc func keyboardWillShow(_ sender: Notification) {
          self.view.frame.origin.y = -150 // Move view 150 points upward
     }
@@ -65,50 +93,7 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
          self.view.frame.origin.y = 0 // Move view to original position
     }
     
-    func ensurePhotoPermission() {
-        let status = PHPhotoLibrary.authorizationStatus()
-        
-        switch status {
-        case .authorized:
-            print("Photo access is authorized")
-        case .denied, .restricted :
-            print("Photo access is denied or restricted")
-        case .notDetermined:
-            print("Asking for permissions to photos")
-            
-            PHPhotoLibrary.requestAuthorization { status in
-                switch status {
-                case .authorized:
-                    print("Photo access was granted")
-                case .denied, .restricted:
-                    print("Photo access was denied or restricted")
-                case .notDetermined:
-                    print("Photo access still not determined")
-                @unknown default:
-                    print("Unknown status \(status)")
-                }
-            }
-        @unknown default:
-            print("Unknown status \(status)")
-        }
-    }
-    
-    func choosePhoto() {
-        ensurePhotoPermission()
-        
-        if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
-            print("Button capture")
-            
-            let imagePicker = UIImagePickerController()
-            imagePicker.delegate = (self as UIImagePickerControllerDelegate & UINavigationControllerDelegate)
-            imagePicker.sourceType = .savedPhotosAlbum;
-            imagePicker.allowsEditing = true
-            
-            self.present(imagePicker, animated: true, completion: nil)
-        }
-    }
-    
-    func crop(image: UIImage) -> UIImage {
+    override func crop(image: UIImage) -> UIImage {
         let r: CGRect = CGRect(x: 0, y: 0, width: 640/2, height: 640/2)
         UIGraphicsBeginImageContextWithOptions(r.size, false, 0.0)
         
@@ -137,21 +122,7 @@ class ProfileViewController: UIViewController, UINavigationControllerDelegate, U
         return image
     }
     
-    @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage!, editingInfo: [NSObject : AnyObject]!)
-    {
-        self.dismiss(animated: true, completion: { () -> Void in
-            print("Dismissed")
-        })
-        
-        print("Setting image")
-        
-        if image.cgImage != nil {
-            let cropped = crop(image: image)
-            imageButton.setImage(cropped, for:UIControl.State.normal)
-            self.profile.uploadImage(cropped)
-        }
-        else {
-            print("Not a CGImage")
-        }
+    override func didPickImage(image: UIImage) {
+        imageButton.setImage(image, for:UIControl.State.normal)
     }
 }

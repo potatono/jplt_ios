@@ -14,7 +14,7 @@ import FirebaseStorage
 import Photos
 
 
-class DetailViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class DetailViewController: ImagePickerViewController {
     enum State {
         case empty
         case recording
@@ -22,11 +22,20 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         case playing
         case paused
     }
+    
+    enum MetaState {
+        case new
+        case recorded
+        case editing
+        case published
+        case locked
+    }
 
     public var podcast:Podcast = Podcast()
     public var episode:Episode = Episode()
     
     private var _state:State = State.empty
+    private var _metaState:MetaState = MetaState.new
     private var _audioRecorder:AVAudioRecorder!
     private let _recordSettings = [
         AVSampleRateKey:NSNumber(value: Float(44100.0)),
@@ -55,6 +64,10 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var coverButtonWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var coverButtonHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var publishButton: UIBarButtonItem!
+    @IBOutlet weak var tapToChangeCoverLabel: UILabel!
+    @IBOutlet weak var crosspostButton: UIButton!
+    
     
     // MARK: Actions
     @IBAction func didPressMedia(_ sender: Any) {
@@ -110,21 +123,25 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     }
     
     @IBAction func didPressCover(_ sender: Any) {
-        choosePhoto()
+        presentImagePicker(from: sender)
     }
     
     @IBAction func didBeginEditingTitle(_ sender: Any) {
         //self.view.frame.origin.y = -128
-        titleTextField.borderStyle = .roundedRect
+        //titleTextField.borderStyle = .roundedRect
     }
     
     @IBAction func didEndEditingTitle(_ sender: Any) {
         //self.view.frame.origin.y = 0
-        titleTextField.borderStyle = .none
+        //titleTextField.borderStyle = .none
 
     }
     
     @IBAction func didEditTitle(_ sender: Any) {
+        
+    }
+    
+    @IBAction func doneEditingTitle(_ sender: Any) {
         if titleTextField.text != nil && titleTextField.text!.count > 0 {
             episode.title = titleTextField.text!
             episode.save()
@@ -132,10 +149,25 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         else {
             titleTextField.text = episode.title
         }
+        
+        titleTextField.resignFirstResponder()
     }
     
-    @IBAction func doneEditingTitle(_ sender: Any) {
-        titleTextField.resignFirstResponder()
+    @IBAction func didPressPublish(_ sender: Any) {
+        print("Published Button Pressed")
+        switch _metaState {
+        case .published:
+            setMetaState(.editing)
+        case .editing:
+            setMetaState(.published)
+        case .recorded:
+            episode.publish(podcast: podcast)
+            setMetaState(.published)
+        case .new:
+            print("Publish pressed in .new _metaState, this shouldn't happen.")
+        case .locked:
+            print("Publish pressed in .locked _metaState, this shouldn't happen.")
+        }
     }
     
     // MARK: Overrides
@@ -150,21 +182,21 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         episode.profile.addBinding(forTopic: "username", control: usernameLabel)
         episode.profile.addBinding(forTopic: "remoteThumbURL", control: profileImageView)
 
-        _editable = episode.canEdit()
-        titleTextField.isEnabled = _editable
-        coverButton.isEnabled = _editable
-        deleteButton.isEnabled = _editable
-
         if episode.remoteURL != nil {
             setState(.stopped)
             scrubSlider.isEnabled = true
         }
         else {
-            mediaButton.isEnabled = _editable
+            mediaButton.isEnabled = episode.canEdit()
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name:UIResponder.keyboardWillShowNotification, object: nil);
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name:UIResponder.keyboardWillHideNotification, object: nil);
+        
+        tapToChangeCoverLabel.layer.cornerRadius = 5
+        tapToChangeCoverLabel.layer.masksToBounds = true
+        
+        determineMetaState()
     }
     
     @objc func keyboardWillShow(_ sender: Notification) {
@@ -179,8 +211,8 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         let screenSize = UIScreen.main.bounds
         let screenHeight = screenSize.height
         
-        print("Resizing coverButton")
         let size = screenHeight / 2
+        print("Resizing coverButton to \(size)")
         
         coverButtonWidthConstraint.constant = size
         coverButtonHeightConstraint.constant = size
@@ -194,11 +226,13 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         episode.removeBinding(dateLabel)
         episode.profile.removeBinding(usernameLabel)
         episode.profile.removeBinding(profileImageView)
-        
-        if (!self.navigationController!.viewControllers.contains(self) &&
-            episode.shouldSendNotifications())
-        {
-            Notifications.send(episode:episode, podcast:podcast)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let crosspostTableViewController = segue.destination as? CrosspostTableViewController {
+            let pids = Profiles.me().subscriptions.drop(while: { $0 == podcast.pid })
+            crosspostTableViewController.podcasts = pids.map({ return Podcast($0) })
+            crosspostTableViewController.episode = episode
         }
     }
     
@@ -224,60 +258,97 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
         mediaButton.setImage(UIImage(named: image_name!), for: UIControl.State.normal)
     }
     
-    func ensurePhotoPermission() {
-        let status = PHPhotoLibrary.authorizationStatus()
+    func setMetaState(_ value:MetaState) {
+        print("MetaState set to \(value)")
+        _metaState = value
         
-        switch status {
-        case .authorized:
-            print("Photo access is authorized")
-        case .denied, .restricted :
-            print("Photo access is denied or restricted")
-        case .notDetermined:
-            print("Asking for permissions to photos")
-            
-            PHPhotoLibrary.requestAuthorization { status in
-                switch status {
-                case .authorized:
-                    print("Photo access was granted")
-                case .denied, .restricted:
-                    print("Photo access was denied or restricted")
-                case .notDetermined:
-                    print("Photo access still not determined")
-                @unknown default:
-                    print("Unknown status \(status)")
-                }
+        setupMetaControls()
+    }
+    
+    func determineMetaState() {
+        if episode.canEdit() {
+            if episode.published {
+                setMetaState(.published)
             }
-        @unknown default:
-            print("Unknown status \(status)")
+            else if episode.remoteURL != nil {
+                setMetaState(.recorded)
+            }
+            else {
+                setMetaState(.new)
+            }
+        }
+        else {
+            setMetaState(.locked)
         }
     }
     
-    func choosePhoto() {
-        ensurePhotoPermission()
-        
-        if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
-            print("Button capture")
+    func setupMetaControls() {
+        switch _metaState {
+        case .new:
+            tapToChangeCoverLabel.isHidden = false
+            publishButton.title = "Publish"
+            publishButton.isEnabled = false
+            titleTextField.borderStyle = .roundedRect
+            titleTextField.isEnabled = true
+            coverButton.isEnabled = true
+            deleteButton.isHidden = false
+            crosspostButton.isHidden = false
+
+        case .recorded:
+            tapToChangeCoverLabel.isHidden = false
+            publishButton.title = "Publish"
+            publishButton.isEnabled = true
+            titleTextField.borderStyle = .roundedRect
+            titleTextField.isEnabled = true
+            coverButton.isEnabled = true
+            deleteButton.isHidden = false
+            crosspostButton.isHidden = false
+
+        case .editing:
+            tapToChangeCoverLabel.isHidden = false
+            publishButton.title = "Done"
+            publishButton.isEnabled = true
+            titleTextField.borderStyle = .roundedRect
+            titleTextField.isEnabled = true
+            coverButton.isEnabled = true
+            deleteButton.isHidden = false
+            crosspostButton.isHidden = false
+
+        case .published:
+            tapToChangeCoverLabel.isHidden = true
+            publishButton.title = "Edit"
+            publishButton.isEnabled = true
+            titleTextField.borderStyle = .none
+            titleTextField.isEnabled = false
+            coverButton.isEnabled = false
+            deleteButton.isHidden = false
+            crosspostButton.isHidden = false
+
+        case .locked:
+            tapToChangeCoverLabel.isHidden = true
+            publishButton.title = ""
+            publishButton.isEnabled = false
+            titleTextField.borderStyle = .none
+            titleTextField.isEnabled = false
+            coverButton.isEnabled = false
+            deleteButton.isHidden = true
+            crosspostButton.isHidden = true
             
-            let imagePicker = UIImagePickerController()
-            imagePicker.delegate = (self as UIImagePickerControllerDelegate & UINavigationControllerDelegate)
-            imagePicker.sourceType = .savedPhotosAlbum;
-            imagePicker.allowsEditing = true
-            
-            self.present(imagePicker, animated: true, completion: nil)
         }
-    }
-    
-    @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage!, editingInfo: [NSObject : AnyObject]!)
-    {
-        self.dismiss(animated: true, completion: { () -> Void in
-            print("Dismissed")
-        })
         
+    }
+        
+    override func didPickImage(image: UIImage) {
         print("Setting image")
+        self.view.makeToastActivity(.center)
+        
         coverButton.setImage(image, for:UIControl.State.normal)
-        episode.uploadCover(image)
+        coverButton.setImage(image, for:UIControl.State.disabled)
+        episode.uploadCover(image) {
+            self.view.hideToastActivity()
+        }
     }
-    
+
     func ensureRecorder() {
         if _audioRecorder == nil {
             setupRecorder()
@@ -336,13 +407,18 @@ class DetailViewController: UIViewController, UINavigationControllerDelegate, UI
     func stopRecording() {
         print("Stopping recording..")
         
+        self.view.makeToastActivity(.center)
         _audioRecorder.stop()
-        episode.uploadRecording()
+        episode.uploadRecording() {
+            self.setMetaState(.recorded)
+            self.view.hideToastActivity()
+        }
         
         vuMeter.isHidden = true
         scrubSlider.isEnabled = true
         
         setState(.stopped)
+        
     }
     
     

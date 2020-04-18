@@ -139,28 +139,40 @@ class Podcast : Model {
         return "podcasts/\(String(describing: owner!))/\(pid)/\(filename)"
     }
 
-    func uploadCover(_ cover:UIImage) {
+    func uploadCover(_ cover:UIImage, completion: (()->Void)? = nil) {
+        var bothDone = false
+        
         if let data = cover.jpegData(compressionQuality: 0.8) {
             print("Uploading cover..")
             
-            upload(filename: "cover.jpg",
-                   data: data,
-                   completion: { (url) in
-                    self.remoteCoverURL = url
-                    self.save()
-            })
+            upload(filename: "cover.jpg", data: data) { (url) in
+                self.remoteCoverURL = url
+                self.save()
+                
+                if bothDone {
+                    completion?()
+                }
+                else {
+                    bothDone = true
+                }
+            }
         }
         
         let thumb = cover.kf.resize(to: CGSize(width: 300, height: 300))
         if let data = thumb.pngData() {
             print("Uploading cover thumb..")
             
-            self.upload(filename: "cover-thumb.png",
-                        data: data,
-                        completion: { (url) in
-                            self.remoteThumbURL = url
-                            self.save()
-            })
+            self.upload(filename: "cover-thumb.png", data: data) { (url) in
+                self.remoteThumbURL = url
+                self.save()
+
+                if bothDone {
+                    completion?()
+                }
+                else {
+                    bothDone = true
+                }
+            }
         }
     }
     

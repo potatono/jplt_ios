@@ -25,15 +25,25 @@ class Profiles {
     }
     
     func get(_ uid:String, completion: ((Profile) -> Void)? = nil) -> Profile {
-        if self.lookup[uid] == nil {
-            self.lookup[uid] = Profile(uid)
-            self.lookup[uid]!.get(completion: completion)
+        if let profile = self.lookup[uid] {
+            if profile.loaded {
+                completion?(profile)
+            }
+            else if let completion = completion {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [unowned self] in
+                    _ = self.get(uid, completion: completion)
+                }
+            }
+            
+            return profile
         }
         else {
-            completion?(self.lookup[uid]!)
+            let profile = Profile(uid)
+            self.lookup[uid] = profile
+            profile.get(completion: completion)
+            
+            return profile
         }
-        
-        return self.lookup[uid]!
     }
 
     static func get(_ uid:String) -> Profile {
@@ -45,8 +55,8 @@ class Profiles {
     }
     
     static func me(completion: ((Profile) -> Void)?) -> Void {
-        _ = Profiles.instance().get(Auth.auth().currentUser!.uid, completion: completion)
+        if let currentUser = Auth.auth().currentUser {
+            _ = Profiles.instance().get(currentUser.uid, completion: completion)
+        }
     }
-    
-    
 }

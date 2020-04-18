@@ -123,10 +123,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func process(message: [AnyHashable: Any]) {
-        let pid = message["pid"] as! String
-        print("New episode noticication in \(pid)")
+        if let pid = message["pid"] as? String {
+            print("New episode noticication in \(pid)")
         
-        self.podcastChangedTo(pid: pid)
+            self.podcastChangedTo(pid: pid)
+        }
     }
     
     func getEpisodeTableViewController() -> EpisodeTableViewController? {
@@ -207,7 +208,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                              options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
 
         print("[URL] Application opened with url \(url)")
-        self.joinPodcast(url: url)
+
+        if url.host == "jplt.com" {
+            self.joinPodcast(url: url)
+        }
+        
         return true
     }
 

@@ -20,14 +20,17 @@ class Profile : Model {
     var remoteThumbURL: URL?
     var username: String?
     var subscriptions: [String]
+    var loaded: Bool
 
     init(_ uid: String) {
         self.uid = uid
         self.subscriptions = []
+        self.loaded = false
     }
     
     override init() {
         self.subscriptions = []
+        self.loaded = false
     }
     
     func getDocumentReference() -> DocumentReference {
@@ -93,6 +96,7 @@ class Profile : Model {
             self.subscriptions = subscriptions
         }
         
+        self.loaded = true
         self.setBindings()
     }
     
@@ -127,15 +131,24 @@ class Profile : Model {
         return "profiles/\(uid!)/\(filename)"
     }
     
-    func uploadImage(_ image:UIImage) {
-        if let data = image.jpegData(compressionQuality: 0.8) {
+    func uploadImage(_ image:UIImage, completion: (()->Void)? = nil) {
+        //if let data = image.jpegData(compressionQuality: 0.8) {
+        var bothDone = false
+        
+        if let data = image.pngData() {
             print("Uploading profile image..")
             
-            self.upload(filename: "profile.jpg",
+            self.upload(filename: "profile.png",
                         data: data,
                         completion: { (url) in
                             self.remoteImageURL = url
                             self.save()
+                            if bothDone {
+                                completion?()
+                            }
+                            else {
+                                bothDone = true
+                            }
             })
         }
         
@@ -148,6 +161,12 @@ class Profile : Model {
                         completion: { (url) in
                             self.remoteThumbURL = url
                             self.save()
+                            if bothDone {
+                                completion?()
+                            }
+                            else {
+                                bothDone = true
+                            }
             })
         }
     }
