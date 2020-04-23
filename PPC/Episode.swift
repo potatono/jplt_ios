@@ -79,6 +79,19 @@ class Episode : Model, CustomStringConvertible {
         }
     }
     
+    func get(completion: (()->Void)? = nil) {
+        let docRef = getDocumentReference()
+        docRef.getDocument { (snap, err) in
+            if let err = err {
+                print("Error in listener for \(self): \(err)")
+            }
+            else if let data = snap?.data() {
+                self.restore(data)
+                completion?()
+            }
+        }
+    }
+    
     private class func createLocalURL(_ id:String, _ filename:String="sound.m4a") -> URL {
         let fileManager = FileManager.default
         let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)

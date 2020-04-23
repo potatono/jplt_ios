@@ -201,17 +201,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         print("[URL] SceneDelegate called with url \(urlToOpen)")
-        self.joinPodcast(url: urlToOpen)
+        processUrl(url: urlToOpen)
     }
     
     internal func application(_ app: UIApplication, open url: URL,
                              options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
 
         print("[URL] Application opened with url \(url)")
-
-        if url.host == "jplt.com" {
-            self.joinPodcast(url: url)
-        }
+        processUrl(url: url)
+       
+    
         
         return true
     }
@@ -225,8 +224,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             
 
         print("[URL] Restored with url \(incomingURL)")
-        self.joinPodcast(url: incomingURL)
+        processUrl(url: incomingURL)
+        
         return true
+    }
+    
+    func processUrl(url: URL) {
+        if url.host == "jplt.com" {
+            print(url.path)
+            print(url.pathComponents.count)
+            
+            if url.path.starts(with: "/join") {
+                print("Joining podcast")
+                self.joinPodcast(url: url)
+            }
+            else if url.path.starts(with: "/play") && url.pathComponents.count == 4 {
+                let pid = Util.restoreId(url.pathComponents[2])
+                let eid = Util.restoreId(url.pathComponents[3])
+                let podcast = Podcast(pid)
+                let episode = Episode(eid)
+            
+                self.podcastChangedTo(pid: pid)
+                print("Jumping to episode pid=\(pid) eid=\(eid)")
+                
+                episode.get() {
+                    self.window?.rootViewController?.performSegue(withIdentifier: "episodeSegue", sender: [ podcast, episode ])
+                }
+            }
+        }
     }
 }
 

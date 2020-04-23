@@ -16,8 +16,6 @@ class PodcastSubscribersViewCell : UITableViewCell {
     
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
-    @IBOutlet weak var inviteLabel: UILabel!
-    @IBOutlet weak var inviteButton: UIButton!
     
     override func prepareForReuse() {
         if let profile = profile {

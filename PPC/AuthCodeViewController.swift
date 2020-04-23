@@ -31,9 +31,6 @@ class AuthCodeViewController: UIViewController {
                 return
             }
             
-            
-            
-            print("Unwinding...")
             //self.performSegue(withIdentifier: "unwindAuthSegue", sender: self)
             self.performSegue(withIdentifier: "newProfileSegue", sender: self)
         };

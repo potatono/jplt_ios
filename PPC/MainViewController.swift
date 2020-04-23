@@ -16,7 +16,6 @@ class MainViewController: UINavigationController {
 
     // MARK: Actions
     @IBAction func unwindAuth(unwindSegue: UIStoryboardSegue) {
-        print("Unwind Auth")
     }
     
     // MARK: Overridden Methods
@@ -60,10 +59,18 @@ class MainViewController: UINavigationController {
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        // Get the new view controller using segue.destination.
-//        // Pass the selected object to the new view controller.
-//
-//    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        
+        if let detailViewController = segue.destination as? DetailViewController {
+            if let models = sender as? [Any] {
+                detailViewController.podcast = models[0] as! Podcast
+                detailViewController.episode = models[1] as! Episode
+                detailViewController.podcast.listen()
+                detailViewController.episode.listen()
+            }
+        }
+
+    }
 
 }

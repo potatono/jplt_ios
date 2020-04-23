@@ -104,7 +104,6 @@ class ControlBinding {
             }
         }
         else if let control = self.control as? UITableView {
-            print("Reloading table view \(control)")
             control.reloadData()
         }
         else if let control = self.control as? UIViewController,
@@ -153,9 +152,6 @@ class ControlBindings {
         if let (forTopic, binding) = controls[control] {
             bindings[forTopic]!.removeAll(where: { $0 === binding })
             controls.removeValue(forKey: control)
-        }
-        else {
-            print("Binding not found to remove")
         }
     }
     

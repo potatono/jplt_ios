@@ -18,35 +18,19 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
     
     // MARK: Actions
     @IBAction func unwindDetail(unwindSegue: UIStoryboardSegue) {
-        print("unwindDetail")
-
         self.tableView.reloadData()
     }
   
     @IBAction func didPressMore(_ sender: Any) {
-        let alertController = UIAlertController(title: "Podcast", message: nil, preferredStyle: .actionSheet)
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-        let joinButton = UIAlertAction(title: "Join Podcast", style: .default, handler: { (action) -> Void in
-            let alert = UIAlertController(title: "Join Podcast", message: "Invite URL", preferredStyle: UIAlertController.Style.alert)
-            alert.addAction(UIAlertAction(title: "Join", style: UIAlertAction.Style.default, handler: { _ in
-                self.joinPodcast(alert.textFields![0].text!)
-            }))
-            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
-            alert.addTextField(configurationHandler: {(textField: UITextField!) in
-                textField.placeholder = "Invite URL"
-                textField.isSecureTextEntry = false
-            })
-            self.present(alert, animated: true, completion: nil)
-        })
-        alertController.addAction(joinButton)
-
-        let profileButton = UIAlertAction(title: "Edit Profile", style: .default, handler: { (action) -> Void in
+        let profileButton = UIAlertAction(title: "Profile", style: .default, handler: { (action) -> Void in
             self.performSegue(withIdentifier: "profileSegue", sender: sender)
         })
         alertController.addAction(profileButton)
 
         if podcast.owner == Auth.auth().currentUser!.uid {
-            let podcastDetailButton = UIAlertAction(title: "Edit Podcast", style: .default, handler: { (action) -> Void in
+            let podcastDetailButton = UIAlertAction(title: "Podcast", style: .default, handler: { (action) -> Void in
                 self.performSegue(withIdentifier: "podcastDetailSegue", sender: sender)
             })
             alertController.addAction(podcastDetailButton)
@@ -87,7 +71,6 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("View Did Load")
         self.podcastChangedToDefault()
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false

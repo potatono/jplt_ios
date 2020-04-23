@@ -106,20 +106,6 @@
                                     <action selector="didEditName:" destination="jWh-wL-RpA" eventType="editingDidEnd" id="eDo-59-mua"/>
                                 </connections>
                             </textField>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6W-F7-IvT">
-                                <rect key="frame" x="16" y="414" width="343" height="27"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <state key="normal" title="https://jplt.com/join/abcdefghijklmnopqrstuvwxyz"/>
-                                <connections>
-                                    <action selector="didPressInvite:" destination="jWh-wL-RpA" eventType="touchUpInside" id="lEW-Gv-5Gd"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invite URL" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FEo-3U-4xX">
-                                <rect key="frame" x="148.5" y="385" width="78" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" alpha="0.75" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap to change Podcast Cover" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XgJ-Vf-8iz">
                                 <rect key="frame" x="109" y="125" width="157" height="50"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -135,17 +121,12 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="atk-aK-u80" firstAttribute="top" secondItem="wRk-Tl-m7V" secondAttribute="top" id="3TO-O3-Mzu"/>
-                            <constraint firstItem="FEo-3U-4xX" firstAttribute="centerX" secondItem="oOd-ke-RwZ" secondAttribute="centerX" id="621-Ak-O20"/>
                             <constraint firstItem="atk-aK-u80" firstAttribute="centerX" secondItem="oOd-ke-RwZ" secondAttribute="centerX" id="9CU-mt-u71"/>
                             <constraint firstItem="XgJ-Vf-8iz" firstAttribute="centerX" secondItem="oOd-ke-RwZ" secondAttribute="centerX" id="HrN-ku-hRJ"/>
-                            <constraint firstItem="b6W-F7-IvT" firstAttribute="leading" secondItem="wRk-Tl-m7V" secondAttribute="leading" constant="16" id="Omk-pG-JsT"/>
                             <constraint firstItem="XgJ-Vf-8iz" firstAttribute="top" secondItem="wRk-Tl-m7V" secondAttribute="top" constant="125" id="Ppz-Fu-odt"/>
-                            <constraint firstItem="FEo-3U-4xX" firstAttribute="top" secondItem="da2-td-eTm" secondAttribute="bottom" constant="23" id="Q2C-gS-Dqc"/>
                             <constraint firstItem="da2-td-eTm" firstAttribute="leading" secondItem="wRk-Tl-m7V" secondAttribute="leading" constant="16" id="VkK-N8-CQh"/>
                             <constraint firstItem="wRk-Tl-m7V" firstAttribute="trailing" secondItem="da2-td-eTm" secondAttribute="trailing" constant="16" id="ewK-SU-8s8"/>
                             <constraint firstItem="da2-td-eTm" firstAttribute="top" secondItem="atk-aK-u80" secondAttribute="bottom" constant="28" id="f9d-Id-LE2"/>
-                            <constraint firstItem="b6W-F7-IvT" firstAttribute="top" secondItem="da2-td-eTm" secondAttribute="bottom" constant="52" id="jeV-VT-GLL"/>
-                            <constraint firstItem="wRk-Tl-m7V" firstAttribute="trailing" secondItem="b6W-F7-IvT" secondAttribute="trailing" constant="16" id="rGw-Mf-4w3"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="wRk-Tl-m7V"/>
                     </view>
@@ -153,6 +134,12 @@
                         <barButtonItem systemItem="trash" id="dQY-kT-8Xd">
                             <connections>
                                 <action selector="didPressDelete:" destination="jWh-wL-RpA" id="rXA-vT-Xc1"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="GLG-5j-J9c"/>
+                        <barButtonItem image="person.3.fill" catalog="system" id="juV-sF-78o">
+                            <connections>
+                                <segue destination="rfD-sa-eQr" kind="show" id="j13-QH-Xa1"/>
                             </connections>
                         </barButtonItem>
                     </toolbarItems>
@@ -166,7 +153,6 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics" barStyle="black" translucent="NO"/>
                     <connections>
                         <outlet property="coverButton" destination="atk-aK-u80" id="336-9f-4rg"/>
-                        <outlet property="inviteButton" destination="b6W-F7-IvT" id="NEE-Ff-cEg"/>
                         <outlet property="nameTextField" destination="da2-td-eTm" id="BAg-fd-kDZ"/>
                         <outlet property="tapToChangeLabel" destination="XgJ-Vf-8iz" id="q4R-Me-WHd"/>
                         <segue destination="YYI-1i-G8P" kind="unwind" identifier="unwindPodcastDetail" unwindAction="unwindDetailWithUnwindSegue:" id="Cxq-sO-LmX"/>
@@ -177,12 +163,12 @@
             </objects>
             <point key="canvasLocation" x="1013.6" y="1425.3373313343329"/>
         </scene>
-        <!--Podcast Subcribers Table View Controller-->
+        <!--Subscribers-->
         <scene sceneID="pd9-7Q-gPo">
             <objects>
                 <tableViewController id="rfD-sa-eQr" customClass="PodcastSubcribersTableViewController" customModule="PPC" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="BeZ-VQ-1Ly">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="623"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="574"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
@@ -209,38 +195,17 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b3f-G4-rDO">
-                                            <rect key="frame" x="16" y="30" width="343" height="27"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                            <state key="normal" title="https://jplt.com/join/abcdefghijklmnopqrstuvwxyz"/>
-                                            <connections>
-                                                <action selector="didPressInviteButton:" destination="rfD-sa-eQr" eventType="touchUpInside" id="URR-i1-Fen"/>
-                                            </connections>
-                                        </button>
-                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invite URL" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kUw-0Z-7p3">
-                                            <rect key="frame" x="148.5" y="11" width="78" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="kUw-0Z-7p3" firstAttribute="centerX" secondItem="liD-Wc-e8p" secondAttribute="centerX" id="2Vw-Qv-Al0"/>
-                                        <constraint firstItem="b3f-G4-rDO" firstAttribute="trailing" secondItem="liD-Wc-e8p" secondAttribute="trailingMargin" id="3pC-FI-KbU"/>
-                                        <constraint firstItem="kUw-0Z-7p3" firstAttribute="top" secondItem="liD-Wc-e8p" secondAttribute="topMargin" id="4Ys-Am-xwZ"/>
                                         <constraint firstAttribute="trailing" relation="lessThanOrEqual" secondItem="Ai6-xu-dhn" secondAttribute="trailing" constant="8" id="Dsf-xI-Z6N"/>
                                         <constraint firstItem="Ai6-xu-dhn" firstAttribute="top" secondItem="liD-Wc-e8p" secondAttribute="top" id="IdN-fg-uEH"/>
                                         <constraint firstItem="910-jy-uK4" firstAttribute="top" secondItem="Ai6-xu-dhn" secondAttribute="top" id="UV3-oG-ANg"/>
-                                        <constraint firstItem="b3f-G4-rDO" firstAttribute="leading" secondItem="liD-Wc-e8p" secondAttribute="leadingMargin" id="W0B-9q-UGS"/>
-                                        <constraint firstAttribute="bottomMargin" secondItem="b3f-G4-rDO" secondAttribute="bottom" constant="-6" id="Xfw-n1-7dP"/>
                                         <constraint firstItem="Ai6-xu-dhn" firstAttribute="leading" secondItem="910-jy-uK4" secondAttribute="trailing" constant="8" symbolic="YES" id="mSS-B9-a1n"/>
                                         <constraint firstItem="Ai6-xu-dhn" firstAttribute="leading" secondItem="liD-Wc-e8p" secondAttribute="leading" constant="88" id="nh9-Dv-ATY"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                 <connections>
-                                    <outlet property="inviteButton" destination="b3f-G4-rDO" id="haq-Fa-3vP"/>
-                                    <outlet property="inviteLabel" destination="kUw-0Z-7p3" id="1Ca-yC-CLr"/>
                                     <outlet property="profileImage" destination="910-jy-uK4" id="LJ1-eG-z5s"/>
                                     <outlet property="usernameLabel" destination="Ai6-xu-dhn" id="Kqq-qQ-a7S"/>
                                 </connections>
@@ -251,8 +216,15 @@
                             <outlet property="delegate" destination="rfD-sa-eQr" id="Ilm-BO-5Yl"/>
                         </connections>
                     </tableView>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" translucent="NO" prompted="NO"/>
-                    <nil key="simulatedBottomBarMetrics"/>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Subscribers" id="IWE-hq-h1a">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="qoG-8H-Tmm">
+                            <connections>
+                                <action selector="didPressAdd:" destination="rfD-sa-eQr" id="62n-Ip-AyK"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W0m-4C-KKB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -524,12 +496,13 @@
                         </connections>
                     </tableView>
                     <toolbarItems>
-                        <barButtonItem style="plain" systemItem="compose" id="NzG-5U-H2z">
+                        <barButtonItem image="mic.fill" catalog="system" style="plain" id="NzG-5U-H2z">
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <segue destination="n0k-BC-exw" kind="show" id="dMi-G7-A67"/>
                             </connections>
                         </barButtonItem>
+                        <barButtonItem id="9bg-OU-8KV"/>
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="EBB-TH-ANe">
                         <barButtonItem key="leftBarButtonItem" title="Podcasts" image="albums" id="6Bi-vv-4OW">
@@ -570,7 +543,7 @@
                                     <constraint firstAttribute="width" constant="25" id="AN7-Cd-Zlf"/>
                                     <constraint firstAttribute="height" constant="25" id="rBg-Z9-O4i"/>
                                 </constraints>
-                                <state key="normal" image="trash"/>
+                                <state key="normal" image="trash" catalog="system"/>
                                 <connections>
                                     <action selector="didPressDelete:" destination="n0k-BC-exw" eventType="touchUpInside" id="VRe-Vo-voc"/>
                                 </connections>
@@ -638,9 +611,9 @@
                                     <constraint firstAttribute="height" constant="25" id="LHL-Ne-AIv"/>
                                     <constraint firstAttribute="width" constant="25" id="bU0-8E-u2c"/>
                                 </constraints>
-                                <state key="normal" image="share"/>
+                                <state key="normal" image="square.and.arrow.up" catalog="system"/>
                                 <connections>
-                                    <segue destination="OYs-Ty-Q4i" kind="show" id="V73-Ve-UUC"/>
+                                    <action selector="didPressShare:" destination="n0k-BC-exw" eventType="touchUpInside" id="0Xy-cV-E3c"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wQH-zO-uVS">
@@ -650,9 +623,9 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0:00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Jn-9u-eFu">
-                                <rect key="frame" x="308" y="524" width="50" height="14"/>
+                                <rect key="frame" x="333.5" y="524" width="24.5" height="14"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="50" id="TBn-Zw-EnL"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="10" id="TBn-Zw-EnL"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                 <nil key="textColor"/>
@@ -688,7 +661,8 @@
                         <constraints>
                             <constraint firstItem="nVE-ab-egx" firstAttribute="bottom" secondItem="F3Z-me-dsz" secondAttribute="bottom" constant="107" id="4FT-b4-ZGf"/>
                             <constraint firstItem="YbU-QL-95z" firstAttribute="leading" secondItem="nVE-ab-egx" secondAttribute="leading" id="5Rx-bF-A8K"/>
-                            <constraint firstItem="nVE-ab-egx" firstAttribute="trailing" secondItem="7Jn-9u-eFu" secondAttribute="trailing" constant="17" id="62L-wF-UzJ"/>
+                            <constraint firstItem="nVE-ab-egx" firstAttribute="trailing" secondItem="7Jn-9u-eFu" secondAttribute="trailing" constant="17" identifier="scrubremain-align-right" id="62L-wF-UzJ"/>
+                            <constraint firstItem="7Jn-9u-eFu" firstAttribute="centerX" secondItem="fHL-Lw-teo" secondAttribute="centerX" priority="250" identifier="scrubremain-center" id="6Fw-mx-auD"/>
                             <constraint firstItem="e1Y-HE-BFp" firstAttribute="top" secondItem="OVQ-1i-rk7" secondAttribute="bottom" constant="20" id="7MQ-Ct-WUQ"/>
                             <constraint firstItem="YbU-QL-95z" firstAttribute="trailing" secondItem="nVE-ab-egx" secondAttribute="trailing" id="B4F-uu-76D"/>
                             <constraint firstItem="ck0-Eq-ri4" firstAttribute="top" secondItem="nVE-ab-egx" secondAttribute="top" constant="127" id="ENW-vP-EoH"/>
@@ -747,6 +721,7 @@
                         <outlet property="usernameLabel" destination="OTe-Zr-P39" id="O93-gB-sV8"/>
                         <outlet property="vuMeter" destination="YbU-QL-95z" id="2vb-df-kvq"/>
                         <segue destination="bEd-0M-bBv" kind="unwind" identifier="unwindDetailSegue" unwindAction="unwindDetailWithUnwindSegue:" id="MbJ-cz-guN"/>
+                        <segue destination="OYs-Ty-Q4i" kind="show" identifier="crosspostSegue" id="b4k-Sm-ffq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0V8-gd-ssS" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -814,12 +789,12 @@
             </objects>
             <point key="canvasLocation" x="2526" y="655"/>
         </scene>
-        <!--Podcasts Collection View Controller-->
+        <!--Podcasts-->
         <scene sceneID="5rQ-j0-UHO">
             <objects>
                 <collectionViewController id="Bzn-up-7Y2" customClass="PodcastsCollectionViewController" customModule="PPC" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="vrl-uO-sS5">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="574"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="FoT-zc-cjS">
@@ -871,7 +846,16 @@
                             <outlet property="delegate" destination="Bzn-up-7Y2" id="chA-cD-wsq"/>
                         </connections>
                     </collectionView>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" translucent="NO" prompted="NO"/>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Podcasts" id="15F-Je-QFQ">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="pAO-AL-lcr">
+                            <connections>
+                                <action selector="didPressAdd:" destination="Bzn-up-7Y2" id="Cnm-Nv-thr"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dQ5-8A-PQC" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -898,6 +882,7 @@
                     <connections>
                         <segue destination="vcV-0s-KW8" kind="relationship" relationship="rootViewController" id="zuR-HG-VkA"/>
                         <segue destination="5KK-3V-wn9" kind="showDetail" identifier="authPhoneSegue" id="i2K-By-wHq"/>
+                        <segue destination="n0k-BC-exw" kind="show" identifier="episodeSegue" id="WCX-uO-hw2"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ki8-yT-dN9" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -928,6 +913,7 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="26"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" returnKeyType="done" enablesReturnKeyAutomatically="YES" textContentType="nickname"/>
                                 <connections>
+                                    <action selector="didEditUsername:" destination="6Le-H1-x7M" eventType="editingDidEnd" id="mn1-zo-RSJ"/>
                                     <action selector="doneEditingUsername:" destination="6Le-H1-x7M" eventType="primaryActionTriggered" id="usG-n2-MhG"/>
                                     <action selector="usernameEditingDidBegin:" destination="6Le-H1-x7M" eventType="editingDidBegin" id="4wU-b9-IFs"/>
                                     <action selector="usernameEditingDidEnd:" destination="6Le-H1-x7M" eventType="editingDidEnd" id="HO0-1k-O74"/>
@@ -965,7 +951,7 @@
                                 <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rO9-Wm-mtl">
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rO9-Wm-mtl">
                                 <rect key="frame" x="14" y="394" width="43" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <state key="normal" title="Done"/>
@@ -997,6 +983,7 @@
                     <navigationItem key="navigationItem" id="nWz-qg-hnE"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
+                        <outlet property="doneButton" destination="rO9-Wm-mtl" id="7TD-m8-KSy"/>
                         <outlet property="imageButton" destination="ghb-QR-NVI" id="P1X-kM-FTC"/>
                         <outlet property="tapToChangeLabel" destination="RJ5-Tz-U2x" id="X12-PU-Fua"/>
                         <outlet property="usernameTextField" destination="FJ0-zd-GxO" id="8md-ed-0B9"/>
@@ -1009,8 +996,9 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Sbh-R6-JkE"/>
+        <segue reference="dMi-G7-A67"/>
         <segue reference="pC6-4D-IbJ"/>
+        <segue reference="j13-QH-Xa1"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="albums" width="25" height="25"/>
@@ -1022,8 +1010,10 @@
         <image name="jplt_profile_thumb" width="64" height="64"/>
         <image name="justin-thumb" width="128" height="128"/>
         <image name="media_record" width="50" height="50"/>
+        <image name="mic.fill" catalog="system" width="108" height="128"/>
         <image name="more" width="25" height="25"/>
-        <image name="share" width="25" height="25"/>
-        <image name="trash" width="25" height="25"/>
+        <image name="person.3.fill" catalog="system" width="128" height="61"/>
+        <image name="square.and.arrow.up" catalog="system" width="115" height="128"/>
+        <image name="trash" catalog="system" width="121" height="128"/>
     </resources>
 </document>

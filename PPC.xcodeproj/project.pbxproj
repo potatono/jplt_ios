@@ -29,6 +29,7 @@
 		D0685DF02193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
 		D0685DF12193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
 		D0685DF22193BF010092E0FE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */; };
+		D07D47E9244E137E00472731 /* NSViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = D07D47E8244E137E00472731 /* NSViewExt.swift */; };
 		D0947CB9219091A900394049 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0947CB8219091A900394049 /* AppDelegate.swift */; };
 		D0947CBE219091A900394049 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0947CBC219091A900394049 /* Main.storyboard */; };
 		D0947CC0219091AB00394049 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0947CBF219091AB00394049 /* Assets.xcassets */; };
@@ -94,6 +95,7 @@
 		D0682A10243F8EEC005A1AA6 /* Badge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Badge.swift; sourceTree = "<group>"; };
 		D0685DED21921C1A0092E0FE /* UIVUMeter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIVUMeter.swift; sourceTree = "<group>"; };
 		D0685DEF2193BF010092E0FE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D07D47E8244E137E00472731 /* NSViewExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSViewExt.swift; sourceTree = "<group>"; };
 		D0947CB5219091A900394049 /* PPC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0947CB8219091A900394049 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D0947CBD219091A900394049 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 				D01329C024436FD20099D2AE /* CrosspostTableViewController.swift */,
 				D01329C2244379520099D2AE /* CrosspostViewCell.swift */,
 				D0A3E758244B2E1100498F76 /* ImagePickerViewController.swift */,
+				D07D47E8244E137E00472731 /* NSViewExt.swift */,
 			);
 			path = PPC;
 			sourceTree = "<group>";
@@ -500,6 +503,7 @@
 				D0682A11243F8EEC005A1AA6 /* Badge.swift in Sources */,
 				D02DC80A225CF90600DC3352 /* PodcastDetailViewController.swift in Sources */,
 				D01329C3244379520099D2AE /* CrosspostViewCell.swift in Sources */,
+				D07D47E9244E137E00472731 /* NSViewExt.swift in Sources */,
 				D0947CB9219091A900394049 /* AppDelegate.swift in Sources */,
 				D003A70A2225D93600DCC2CD /* SegueFromLeft.swift in Sources */,
 				D0F5F40521BADB7B00EB65CE /* AuthCodeViewController.swift in Sources */,

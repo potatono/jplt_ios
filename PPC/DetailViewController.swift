@@ -12,9 +12,10 @@ import UIKit
 import Firebase
 import FirebaseStorage
 import Photos
+import LinkPresentation
 
 
-class DetailViewController: ImagePickerViewController {
+class DetailViewController: ImagePickerViewController, UIActivityItemSource {
     enum State {
         case empty
         case recording
@@ -98,9 +99,9 @@ class DetailViewController: ImagePickerViewController {
     }
     
     @IBAction func scrubSliderDidEnd(_ sender: Any) {
-        print(_state)
         if _state == .playing {
             _audioPlayer.play()
+            
         }
     }
     
@@ -170,10 +171,74 @@ class DetailViewController: ImagePickerViewController {
         }
     }
     
+    @IBAction func didPressShare(_ sender: Any) {
+        let alertController = UIAlertController(title: "Share Episode", message: nil, preferredStyle: .actionSheet)
+
+        let crosspostButton = UIAlertAction(title: "Crosspost to..", style: .default, handler: { (action) -> Void in
+            self.performSegue(withIdentifier: "crosspostSegue", sender: sender)
+        })
+        alertController.addAction(crosspostButton)
+
+        let shareButton = UIAlertAction(title: "Share via..", style: .default, handler: { (action) -> Void in
+            let activityViewController : UIActivityViewController = UIActivityViewController(
+                activityItems: [self], applicationActivities: nil)
+
+            // This lines is for the popover you need to show in iPad
+            activityViewController.popoverPresentationController?.sourceView = (sender as! UIButton)
+
+            // Anything you want to exclude
+            activityViewController.excludedActivityTypes = [
+                UIActivity.ActivityType.postToWeibo,
+                UIActivity.ActivityType.print,
+                UIActivity.ActivityType.assignToContact,
+                UIActivity.ActivityType.saveToCameraRoll,
+                UIActivity.ActivityType.addToReadingList,
+                UIActivity.ActivityType.postToFlickr,
+                UIActivity.ActivityType.postToVimeo,
+                UIActivity.ActivityType.postToTencentWeibo
+            ]
+
+            self.present(activityViewController, animated: true, completion: nil)
+        })
+        alertController.addAction(shareButton)
+
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
+        })
+        alertController.addAction(cancelButton)
+
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+    }
+    
+    func getShareURL() -> URL {
+        let pid = Util.shortenId(self.podcast.pid)
+        let eid = Util.shortenId(self.episode.id)
+        let url = URL(string: "https://jplt.com/play/\(pid)/\(eid)")!
+        return url
+    }
+    
+    func activityViewControllerPlaceholderItem(_ activityViewController: UIActivityViewController) -> Any {
+        return getShareURL()
+    }
+    
+    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+        return getShareURL()
+    }
+    
+    @available(iOS 13.0, *)
+    func activityViewControllerLinkMetadata(_ activityViewController: UIActivityViewController) -> LPLinkMetadata? {
+        let image = self.coverButton.image(for: .normal)!
+        let imageProvider = NSItemProvider(object: image)
+        let metadata = LPLinkMetadata()
+        metadata.iconProvider = imageProvider
+        metadata.url = getShareURL()
+        metadata.title = episode.title
+        
+        return metadata
+    }
+
     // MARK: Overrides
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("View did load")
         layoutControls()
 
         episode.addBinding(forTopic: "title", control: titleTextField)
@@ -293,7 +358,12 @@ class DetailViewController: ImagePickerViewController {
             coverButton.isEnabled = true
             deleteButton.isHidden = false
             crosspostButton.isHidden = false
-
+            crosspostButton.isEnabled = false
+            scrubSlider.isHidden = true
+            scrubAtLabel.isHidden = true
+            view.constraint(withIdentifier: "scrubremain-align-right")?.priority = .defaultLow
+            view.constraint(withIdentifier: "scrubremain-center")?.priority = .required
+            
         case .recorded:
             tapToChangeCoverLabel.isHidden = false
             publishButton.title = "Publish"
@@ -303,6 +373,11 @@ class DetailViewController: ImagePickerViewController {
             coverButton.isEnabled = true
             deleteButton.isHidden = false
             crosspostButton.isHidden = false
+            crosspostButton.isEnabled = false
+            scrubSlider.isHidden = false
+            scrubAtLabel.isHidden = false
+            view.constraint(withIdentifier: "scrubremain-align-right")?.priority = .required
+            view.constraint(withIdentifier: "scrubremain-center")?.priority = .defaultLow
 
         case .editing:
             tapToChangeCoverLabel.isHidden = false
@@ -313,6 +388,11 @@ class DetailViewController: ImagePickerViewController {
             coverButton.isEnabled = true
             deleteButton.isHidden = false
             crosspostButton.isHidden = false
+            crosspostButton.isEnabled = true
+            scrubSlider.isHidden = false
+            scrubAtLabel.isHidden = false
+            view.constraint(withIdentifier: "scrubremain-align-right")?.priority = .required
+            view.constraint(withIdentifier: "scrubremain-center")?.priority = .defaultLow
 
         case .published:
             tapToChangeCoverLabel.isHidden = true
@@ -323,6 +403,11 @@ class DetailViewController: ImagePickerViewController {
             coverButton.isEnabled = false
             deleteButton.isHidden = false
             crosspostButton.isHidden = false
+            crosspostButton.isEnabled = true
+            scrubSlider.isHidden = false
+            scrubAtLabel.isHidden = false
+            view.constraint(withIdentifier: "scrubremain-align-right")?.priority = .required
+            view.constraint(withIdentifier: "scrubremain-center")?.priority = .defaultLow
 
         case .locked:
             tapToChangeCoverLabel.isHidden = true
@@ -333,7 +418,10 @@ class DetailViewController: ImagePickerViewController {
             coverButton.isEnabled = false
             deleteButton.isHidden = true
             crosspostButton.isHidden = true
-            
+            scrubSlider.isHidden = false
+            scrubAtLabel.isHidden = false
+            view.constraint(withIdentifier: "scrubremain-align-right")?.priority = .required
+            view.constraint(withIdentifier: "scrubremain-center")?.priority = .defaultLow
         }
         
     }
@@ -437,12 +525,17 @@ class DetailViewController: ImagePickerViewController {
         let session = AVAudioSession.sharedInstance()
         
         do {
-        try session.setCategory(.playback,
-                                mode: AVAudioSession.Mode.default,
-                                options: AVAudioSession.CategoryOptions.defaultToSpeaker
+            try session.setCategory(
+                .playback,
+                mode: AVAudioSession.Mode.default,
+                options: [ .mixWithOthers, .allowAirPlay, .defaultToSpeaker ]
             )
+            
+            try session.setActive(true)
         }
-        catch _ {}
+        catch {
+            print(error)
+        }
         
         _audioPlayer = AVPlayer(url: episode.getPlaybackURL()!)
         
@@ -458,6 +551,7 @@ class DetailViewController: ImagePickerViewController {
                 let time_sec = CMTimeGetSeconds(time)
                 let remain = total - time
                 
+                self.view.hideToastActivity()
                 self.scrubSlider.maximumValue = Float(total_sec)
                 self.scrubSlider.value = Float(time_sec)
                 
@@ -480,7 +574,9 @@ class DetailViewController: ImagePickerViewController {
     func startPlayback() {
         ensurePlayer()
         
+        self.view.makeToastActivity(.center)
         _audioPlayer.play()
+    
         setState(.playing)
     }
     

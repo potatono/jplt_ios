@@ -16,7 +16,6 @@ class PodcastDetailViewController : ImagePickerViewController {
 
     @IBOutlet weak var coverButton: UIButton!
     @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var inviteButton: UIButton!
     @IBOutlet weak var tapToChangeLabel: UILabel!
     
     
@@ -25,7 +24,6 @@ class PodcastDetailViewController : ImagePickerViewController {
         
         podcast.addBinding(forTopic: "name", control: nameTextField)
         podcast.addBinding(forTopic: "remoteCoverURL", control: coverButton, options: ["noCrop": true])
-        podcast.addBinding(forTopic: "inviteURL", control: inviteButton, options: ["asText": true])
         podcast.listen()
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name:UIResponder.keyboardWillShowNotification, object: nil);
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name:UIResponder.keyboardWillHideNotification, object: nil);

@@ -32,4 +32,34 @@ class Util {
         }
         task.resume()
     }
+    
+    static func shortenId(_ id: String) -> String {
+        guard let tempUuid = NSUUID(uuidString: id) else {
+            return id
+        }
+        var tempUuidBytes: [UInt8] = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+        tempUuid.getBytes(&tempUuidBytes)
+        let data = Data(bytes: &tempUuidBytes, count: 16)
+        let base64 = data.base64EncodedString(options: NSData.Base64EncodingOptions())
+        return base64.replacingOccurrences(of: "=", with: "")
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+    }
+    
+    static func restoreId(_ code: String) -> String {
+        if code.count == 22 {
+            let base64 = code
+                .replacingOccurrences(of: "-", with: "+")
+                .replacingOccurrences(of: "_", with: "/")
+                .appendingFormat("==")
+            
+            let data = Data(base64Encoded: base64)
+            let uuidBytes = data?.withUnsafeBytes { $0.baseAddress?.assumingMemoryBound(to: UInt8.self) }
+            let tempUuid = NSUUID(uuidBytes: uuidBytes)
+            return tempUuid.uuidString
+        }
+        else {
+            return code
+        }
+    }    
 }

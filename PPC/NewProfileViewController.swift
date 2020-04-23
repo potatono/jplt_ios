@@ -17,7 +17,8 @@ class NewProfileViewController: ProfileViewController {
     // We get a reference to this before the first segue, we update podcast after we've finished
     // ensuring there's a profile and a first podcast.
     public static var podcastChangedDelegate : PodcastChangedDelegate?
-        
+    @IBOutlet weak var doneButton: UIButton!
+    
     @IBAction func didPressDone(_ sender: Any) {
         save() {
             if let delegate = NewProfileViewController.podcastChangedDelegate {
@@ -28,5 +29,15 @@ class NewProfileViewController: ProfileViewController {
                 }
             }
         }
+    }
+    
+    @IBAction func didEditUsername(_ sender: Any) {
+        doneButton.isEnabled = (usernameTextField.text != nil && usernameTextField.text != "")
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        doneButton.isEnabled = (usernameTextField.text != nil && usernameTextField.text != "")
     }
 }

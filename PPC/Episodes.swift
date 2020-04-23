@@ -79,13 +79,25 @@ class Episodes : Model {
                     Episodes.PID = profile.subscriptions[0]
                 }
                 else if let username = profile.username {
+                    print("Creating initial podcast..")
                     let podcast = Podcast()
                     podcast.name = username + "'s Podcast"
+                    
                     
                     podcast.save()
                     profile.subscriptions.append(podcast.pid)
                     profile.save()
                     Episodes.PID = podcast.pid
+                    
+                    print("Adding help episode to new podcast..")
+                    let episode = Episode()
+                    episode.remoteURL = URL(string:"https://firebasestorage.googleapis.com/v0/b/personalpodcastapp.appspot.com/o/podcasts%2F77gRdgetwSO5QhQvBhPiWhNgG632%2Fepisodes%2F99CE14A6-BE3E-4111-9EA8-A6690FC802F5%2Fsound.m4a?alt=media&token=7c299293-fa3a-4dee-b48b-280254f2dabb")!
+                    episode.owner = profile.uid
+                    episode.title = "Welcome to JPLT"
+                    episode.notified = true
+                    episode.published = true
+                    episode.save()
+                    
                 }
                 
                 completion?(Episodes.PID)

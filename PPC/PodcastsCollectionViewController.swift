@@ -17,6 +17,37 @@ class PodcastsCollectionViewController : UICollectionViewController {
     var changeDelegate: PodcastChangedDelegate?
     var podcasts: [Podcast] = []
     
+    
+    @IBAction func didPressAdd(_ sender: Any) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        let joinButton = UIAlertAction(title: "Join Podcast", style: .default, handler: { (action) -> Void in
+            let alert = UIAlertController(title: "Join Podcast", message: "Invite URL", preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Join", style: UIAlertAction.Style.default, handler: { _ in
+                self.joinPodcast(alert.textFields![0].text!)
+            }))
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: nil))
+            alert.addTextField(configurationHandler: {(textField: UITextField!) in
+                textField.placeholder = "Invite URL"
+                textField.isSecureTextEntry = false
+            })
+            self.present(alert, animated: true, completion: nil)
+        })
+        alertController.addAction(joinButton)
+        
+        let newButton = UIAlertAction(title: "Create New Podcast", style: .default, handler: { (action) -> Void in
+            self.createPodcast()
+        })
+        alertController.addAction(newButton)
+        
+        let cancelButton = UIAlertAction(title: "Cancel", style: .cancel, handler: { (action) -> Void in
+               })
+        alertController.addAction(cancelButton)
+        
+        self.navigationController!.present(alertController, animated: true, completion: nil)
+
+    }
+    
     override func viewDidLoad() {
         let subs = Profiles.me().subscriptions
         
@@ -36,7 +67,7 @@ class PodcastsCollectionViewController : UICollectionViewController {
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return podcasts.count + 1
+        return podcasts.count
     }
 
     override func collectionView(_ collectionView: UICollectionView,
@@ -63,9 +94,6 @@ class PodcastsCollectionViewController : UICollectionViewController {
             cell.badgeLabel.text = String(unread)
             cell.badgeLabel.isHidden = unread <= 0
         }
-        else {
-            cell.coverImageView.image = UIImage(named:"newpodcast")
-        }
         
         return cell
     }
@@ -73,14 +101,7 @@ class PodcastsCollectionViewController : UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         if let changeDelegate = self.changeDelegate {
             
-            if indexPath.row >= podcasts.count {
-                print("Creating new podcast")
-                let podcast = Podcast()
-                podcast.save()
-                podcasts.append(podcast)
-                Profiles.me().subscriptions.append(podcast.pid)
-                Profiles.me().save()
-            }
+      
 
             let pid = podcasts[indexPath.row].pid
             changeDelegate.podcastChangedTo(pid: pid)
@@ -89,5 +110,33 @@ class PodcastsCollectionViewController : UICollectionViewController {
         }
 
         return false
+    }
+    
+    func createPodcast() {
+        print("Creating new podcast")
+        let podcast = Podcast()
+        podcast.save()
+        podcasts.append(podcast)
+        Profiles.me().subscriptions.append(podcast.pid)
+        Profiles.me().save()
+        
+        self.changeDelegate?.podcastChangedTo(pid: podcast.pid)
+        self.navigationController?.popViewController(animated: true)
+    }
+    
+    func joinPodcast(_ inviteURLString: String) {
+        print("Joining podcast " + inviteURLString)
+        self.view.makeToastActivity(.center)
+        
+        Profiles.me() { profile in
+            profile.joinPodcast(inviteURLString: inviteURLString) { pid in
+                self.changeDelegate?.podcastChangedTo(pid: pid)
+            
+                DispatchQueue.main.sync {
+                    self.view.hideAllToasts(includeActivity: true, clearQueue: true)
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+        }
     }
 }

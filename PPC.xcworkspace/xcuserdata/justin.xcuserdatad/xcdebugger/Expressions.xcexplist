@@ -3,10 +3,13 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "static Profiles.me(completion:):Profiles.swift">
+         contextName = "AppDelegate.userNotificationCenter(_:didReceive:withCompletionHandler:):AppDelegate.swift">
          <PersistentStrings>
             <PersistentString
-               value = "Auth.auth().currentUser">
+               value = "self.window!.rootViewController!.children">
+            </PersistentString>
+            <PersistentString
+               value = "self.window!.rootViewController">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -19,13 +22,10 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "AppDelegate.userNotificationCenter(_:didReceive:withCompletionHandler:):AppDelegate.swift">
+         contextName = "static Profiles.me(completion:):Profiles.swift">
          <PersistentStrings>
             <PersistentString
-               value = "self.window!.rootViewController">
-            </PersistentString>
-            <PersistentString
-               value = "self.window!.rootViewController!.children">
+               value = "Auth.auth().currentUser">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
