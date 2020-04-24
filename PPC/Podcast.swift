@@ -126,12 +126,9 @@ class Podcast : Model {
                 self.listen()
             }
             
-            print("Writing subscribers collection")
             for pid in data["subscribers"] as! [String] {
                 docRef.collection("subscribers").addDocument(data: [pid : []])
             }
-            
-            print("Done")
         }
     }
     

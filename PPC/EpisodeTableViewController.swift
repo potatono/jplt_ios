@@ -129,13 +129,15 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
             fatalError("The dequeued cell is not an instance of EpisodeTableViewCell")
         }
 
-        let episode = episodes.list[indexPath.row]
-        cell.episode = episode
-        episode.addBinding(forTopic: "title", control: cell.titleLabel)
-        episode.addBinding(forTopic: "remoteThumbURL", control: cell.coverImageView)
-        episode.addBinding(forTopic: "createDate", control: cell.dateLabel)
-        episode.profile.addBinding(forTopic: "username", control: cell.usernameLabel)
-        episode.profile.addBinding(forTopic: "remoteThumbURL", control: cell.profileImageView)
+        if episodes.list.count > 0 && episodes.list.count > indexPath.row {
+            let episode = episodes.list[indexPath.row]
+            cell.episode = episode
+            episode.addBinding(forTopic: "title", control: cell.titleLabel)
+            episode.addBinding(forTopic: "remoteThumbURL", control: cell.coverImageView)
+            episode.addBinding(forTopic: "createDate", control: cell.dateLabel)
+            episode.profile.addBinding(forTopic: "username", control: cell.usernameLabel)
+            episode.profile.addBinding(forTopic: "remoteThumbURL", control: cell.profileImageView)
+        }
         
         return cell
     }

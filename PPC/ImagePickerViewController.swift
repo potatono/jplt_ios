@@ -76,7 +76,7 @@ class ImagePickerViewController: UIViewController, UINavigationControllerDelegat
             }
         }
 
-        self.navigationController?.present(alertController, animated: true)
+        self.present(alertController, animated: true)
     }
     
     func presentImagePicker(from sender: Any) {
@@ -104,10 +104,10 @@ class ImagePickerViewController: UIViewController, UINavigationControllerDelegat
     @objc func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage!, editingInfo: [NSObject : AnyObject]!)
     {
         self.dismiss(animated: true, completion: { () -> Void in
-            print("Dismissed")
+            //print("Dismissed")
         })
         
-        print("Setting image")
+        //print("Setting image")
         
         if image.cgImage != nil {
             pickedImage = crop(image: image)
