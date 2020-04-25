@@ -1,23 +1,23 @@
 {
   "images" : [
     {
+      "filename" : "covericon@1x.png",
       "idiom" : "universal",
-      "filename" : "cover_icon@1x.png",
       "scale" : "1x"
     },
     {
+      "filename" : "covericon@2x.png",
       "idiom" : "universal",
-      "filename" : "cover_icon@2x.png",
       "scale" : "2x"
     },
     {
+      "filename" : "covericon@3x.png",
       "idiom" : "universal",
-      "filename" : "cover_icon@3x.png",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }

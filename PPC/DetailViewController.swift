@@ -89,18 +89,18 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
     @IBAction func scrubSliderChanged(_ sender: Any) {
         let time = CMTime(seconds: Double(scrubSlider.value), preferredTimescale: 1)
         
-        _audioPlayer.seek(to: time)
+        _audioPlayer?.seek(to: time)
     }
     
     @IBAction func scrubSliderDidStart(_ sender: Any) {
         if _state == .playing {
-            _audioPlayer.pause()
+            _audioPlayer?.pause()
         }
     }
     
     @IBAction func scrubSliderDidEnd(_ sender: Any) {
         if _state == .playing {
-            _audioPlayer.play()
+            _audioPlayer?.play()
             
         }
     }

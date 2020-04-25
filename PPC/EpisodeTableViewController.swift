@@ -34,11 +34,6 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
                 self.performSegue(withIdentifier: "podcastDetailSegue", sender: sender)
             })
             alertController.addAction(podcastDetailButton)
-
-            let subscribersButton = UIAlertAction(title: "Subscribers", style: .default, handler: { (action) -> Void in
-                self.performSegue(withIdentifier: "subscribersSegue", sender: sender)
-            })
-            alertController.addAction(subscribersButton)
         }
         else {
             let leaveButton = UIAlertAction(title: "Leave Podcast", style: .default, handler: { (action) -> Void in
@@ -51,7 +46,12 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
             })
             alertController.addAction(leaveButton)
         }
-            
+
+        let subscribersButton = UIAlertAction(title: "Subscribers", style: .default, handler: { (action) -> Void in
+            self.performSegue(withIdentifier: "subscribersSegue", sender: sender)
+        })
+        alertController.addAction(subscribersButton)
+
         let logoutButton = UIAlertAction(title: "Logout", style: .default) { _ in
             do {
                 try Auth.auth().signOut()
@@ -183,7 +183,7 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
         podcast.listen()
     }
     
-    func joinPodcast(_ inviteURLString: String) {
+    func joinPodcast(_ inviteURLString: String, completion: (()->Void)? = nil) {
         print("Joining podcast " + inviteURLString)
         self.view.makeToastActivity(.center)
         
@@ -193,6 +193,8 @@ class EpisodeTableViewController: UITableViewController, PodcastChangedDelegate 
             
                 DispatchQueue.main.sync {
                     self.view.hideAllToasts(includeActivity: true, clearQueue: true)
+                    
+                    completion?()
                 }
             }
         }

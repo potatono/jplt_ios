@@ -17,17 +17,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="jplt_full" translatesAutoresizingMaskIntoConstraints="NO" id="r2C-f9-iWO">
-                                <rect key="frame" x="0.0" y="297.5" width="414" height="301"/>
+                                <rect key="frame" x="0.0" y="189.5" width="414" height="517"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="r2C-f9-iWO" secondAttribute="height" multiplier="414:301" id="yw7-5w-bOs"/>
+                                    <constraint firstAttribute="width" secondItem="r2C-f9-iWO" secondAttribute="height" multiplier="414:517" id="7YF-sM-TYK"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="r2C-f9-iWO" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="XW6-Kx-FGK"/>
-                            <constraint firstItem="r2C-f9-iWO" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="hlq-Ya-AQ5"/>
-                            <constraint firstItem="r2C-f9-iWO" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="qmG-Vf-fum"/>
+                            <constraint firstItem="r2C-f9-iWO" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="ADG-Na-7hU"/>
+                            <constraint firstItem="r2C-f9-iWO" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Fk1-Oq-axe"/>
+                            <constraint firstItem="r2C-f9-iWO" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="ZsB-by-C2h"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -38,6 +38,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="jplt_full" width="1200" height="859"/>
+        <image name="jplt_full" width="1201" height="1332"/>
     </resources>
 </document>

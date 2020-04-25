@@ -38,7 +38,7 @@ class PodcastsCollectionViewCell : UICollectionViewCell {
     
     override func prepareForReuse() {
         if let podcast = podcast {
-            coverImageView.image = UIImage(named: "jplt_full")
+            coverImageView.image = UIImage(named: "cover")
             nameLabel.text = "New Podcast"
             podcast.removeBinding(coverImageView)
             podcast.removeBinding(nameLabel)

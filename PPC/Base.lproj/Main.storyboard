@@ -93,7 +93,7 @@
                                     <constraint firstAttribute="height" constant="300" id="i5k-IZ-kGj"/>
                                     <constraint firstAttribute="width" constant="300" id="yBa-nh-gd3"/>
                                 </constraints>
-                                <state key="normal" image="jplt_full"/>
+                                <state key="normal" image="cover"/>
                                 <connections>
                                     <action selector="didPressCover:" destination="jWh-wL-RpA" eventType="touchUpInside" id="7hK-v8-f6X"/>
                                 </connections>
@@ -811,7 +811,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="300" height="340"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="jplt_full" translatesAutoresizingMaskIntoConstraints="NO" id="0Ff-ga-3W8">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cover" translatesAutoresizingMaskIntoConstraints="NO" id="0Ff-ga-3W8">
                                             <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="300" id="QID-bz-js9"/>
@@ -1002,10 +1002,9 @@
     </inferredMetricsTieBreakers>
     <resources>
         <image name="albums" width="25" height="25"/>
-        <image name="cover" width="1024" height="1024"/>
+        <image name="cover" width="300" height="300"/>
         <image name="cover_icon" width="100" height="100"/>
         <image name="jplt_banner" width="1200" height="338"/>
-        <image name="jplt_full" width="1200" height="859"/>
         <image name="jplt_profile" width="640" height="640"/>
         <image name="jplt_profile_thumb" width="64" height="64"/>
         <image name="justin-thumb" width="128" height="128"/>

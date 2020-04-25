@@ -147,10 +147,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.getEpisodeTableViewController()?.podcastChangedTo(pid: pid)
     }
     
-    func joinPodcast(url: URL) {
-        self.getEpisodeTableViewController()?.joinPodcast(url.absoluteString)
+    func joinPodcast(url: URL, completion: (()->Void)? = nil) {
+        self.getEpisodeTableViewController()?.joinPodcast(url.absoluteString, completion: completion)
     }
     
+    func playEpisode(url: URL) {
+        let pid = Util.restoreId(url.pathComponents[2])
+        let eid = Util.restoreId(url.pathComponents[3])
+        
+        Profiles.me() { profile in
+            if profile.subscriptions.contains(pid) {
+                let podcast = Podcast(pid)
+                let episode = Episode(eid)
+
+                episode.get() {
+                    self.window?.rootViewController?.performSegue(withIdentifier: "episodeSegue", sender: [ podcast, episode ])
+                }
+            }
+            else {
+                let joinURL = URL(string:"https://jplt.com/join/\(pid)")!
+            
+                self.joinPodcast(url: joinURL) {
+                    self.playEpisode(url: url)
+                }
+            }
+        }
+    }
+
     // [START refresh_token]
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String) {
         print("Firebase registration token: \(fcmToken)")
@@ -231,25 +254,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func processUrl(url: URL) {
         if url.host == "jplt.com" {
-            print(url.path)
-            print(url.pathComponents.count)
-            
             if url.path.starts(with: "/join") {
-                print("Joining podcast")
+                print("Joining podcast \(url)")
                 self.joinPodcast(url: url)
             }
             else if url.path.starts(with: "/play") && url.pathComponents.count == 4 {
-                let pid = Util.restoreId(url.pathComponents[2])
-                let eid = Util.restoreId(url.pathComponents[3])
-                let podcast = Podcast(pid)
-                let episode = Episode(eid)
-            
-                self.podcastChangedTo(pid: pid)
-                print("Jumping to episode pid=\(pid) eid=\(eid)")
-                
-                episode.get() {
-                    self.window?.rootViewController?.performSegue(withIdentifier: "episodeSegue", sender: [ podcast, episode ])
-                }
+                print("Playing episode \(url)")
+                self.playEpisode(url: url)
             }
         }
     }

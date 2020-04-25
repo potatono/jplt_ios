@@ -1,8 +1,8 @@
 {
   "images" : [
     {
+      "filename" : "jplt_full_noclip.png",
       "idiom" : "universal",
-      "filename" : "jplt_full.jpg",
       "scale" : "1x"
     },
     {
@@ -15,7 +15,7 @@
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }
