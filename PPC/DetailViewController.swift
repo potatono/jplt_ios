@@ -68,6 +68,7 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
     @IBOutlet weak var publishButton: UIBarButtonItem!
     @IBOutlet weak var tapToChangeCoverLabel: UILabel!
     @IBOutlet weak var crosspostButton: UIButton!
+    @IBOutlet weak var thankButton: UIButton!
     
     
     // MARK: Actions
@@ -209,6 +210,12 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
         self.navigationController!.present(alertController, animated: true, completion: nil)
     }
     
+    @IBAction func didPressThank(_ sender: Any) {
+        episode.thank()
+        
+    }
+    
+    
     func getShareURL() -> URL {
         let pid = Util.shortenId(self.podcast.pid)
         let eid = Util.shortenId(self.episode.id)
@@ -281,6 +288,9 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
         
         coverButtonWidthConstraint.constant = size
         coverButtonHeightConstraint.constant = size
+//        titleTextFieldTopConstraint.constant = 50
+//        scrubSliderBottomConstraint.constant = 200
+        
         coverButton.layoutIfNeeded()
         titleTextField.layoutIfNeeded()
     }
@@ -357,6 +367,7 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
             titleTextField.isEnabled = true
             coverButton.isEnabled = true
             deleteButton.isHidden = false
+            thankButton.isHidden = true
             crosspostButton.isHidden = false
             crosspostButton.isEnabled = false
             scrubSlider.isHidden = true
@@ -372,6 +383,7 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
             titleTextField.isEnabled = true
             coverButton.isEnabled = true
             deleteButton.isHidden = false
+            thankButton.isHidden = true
             crosspostButton.isHidden = false
             crosspostButton.isEnabled = false
             scrubSlider.isHidden = false
@@ -387,6 +399,7 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
             titleTextField.isEnabled = true
             coverButton.isEnabled = true
             deleteButton.isHidden = false
+            thankButton.isHidden = true
             crosspostButton.isHidden = false
             crosspostButton.isEnabled = true
             scrubSlider.isHidden = false
@@ -402,6 +415,7 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
             titleTextField.isEnabled = false
             coverButton.isEnabled = false
             deleteButton.isHidden = false
+            thankButton.isHidden = true
             crosspostButton.isHidden = false
             crosspostButton.isEnabled = true
             scrubSlider.isHidden = false
@@ -417,6 +431,7 @@ class DetailViewController: ImagePickerViewController, UIActivityItemSource {
             titleTextField.isEnabled = false
             coverButton.isEnabled = false
             deleteButton.isHidden = true
+            thankButton.isHidden = false
             crosspostButton.isHidden = true
             scrubSlider.isHidden = false
             scrubAtLabel.isHidden = false

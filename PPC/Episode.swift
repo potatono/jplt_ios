@@ -67,6 +67,22 @@ class Episode : Model, CustomStringConvertible {
         return col.document(self.id)
     }
     
+    func getReactionsReference() -> CollectionReference {
+        let doc = getDocumentReference()
+        return doc.collection("reactions")
+    }
+    
+    func thank() {
+        let reactions = getReactionsReference()
+        let doc: [String: Any] = [
+            "type": "thank",
+            "from": Profiles.me().uid!,
+            "createDate": Timestamp(date:createDate)
+        ]
+        
+        reactions.document("thank:\(Profiles.me().uid!)").setData(doc)
+    }
+    
     func listen() {
         let docRef = getDocumentReference()
         listenerRegistration = docRef.addSnapshotListener { (snap, err) in
